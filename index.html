@@ -37,7 +37,7 @@ gap:10px;
 flex-wrap:wrap;
 }
 
-.topbar input, .topbar select{
+.topbar input{
 padding:12px;
 border-radius:8px;
 border:1px solid #ddd;
@@ -86,16 +86,18 @@ align-items:center;
 gap:6px;
 font-size:13px;
 color:#666;
+margin-top:4px;
 }
 
-.company img{
-height:18px;
+.airlogo{
+height:16px;
 }
 
 .price{
 font-size:18px;
 font-weight:bold;
 color:#0B3C8A;
+margin-top:6px;
 }
 
 .badge{
@@ -209,17 +211,7 @@ font-size:20px;
 </div>
 
 <div class="topbar">
-
 <input id="search" placeholder="Buscar destino, origen o compañía">
-
-<input type="date" id="fecha">
-
-<select id="orden">
-<option value="">Ordenar</option>
-<option value="menor">Precio menor</option>
-<option value="mayor">Precio mayor</option>
-</select>
-
 </div>
 
 <div class="featured">
@@ -278,7 +270,7 @@ destacados()
 
 function destacados(){
 
-let top=[...promos].sort((a,b)=>a.tarifa-b.tarifa).slice(0,3)
+let top=[...promos].slice(0,3)
 
 let cont=document.getElementById("destacados")
 
@@ -296,25 +288,14 @@ let cont=document.getElementById("lista")
 cont.innerHTML=""
 
 let filtro=document.getElementById("search").value.toLowerCase()
-let fecha=document.getElementById("fecha").value
-let orden=document.getElementById("orden").value
 
-let lista=[...promos]
-
-lista=lista.filter(p=>
+let lista=promos.filter(p=>
 
 p.destino.toLowerCase().includes(filtro) ||
 p.origen.toLowerCase().includes(filtro) ||
 p.compania.toLowerCase().includes(filtro)
 
 )
-
-if(fecha!=""){
-lista=lista.filter(p=>p.salida.includes(fecha))
-}
-
-if(orden=="menor") lista.sort((a,b)=>a.tarifa-b.tarifa)
-if(orden=="mayor") lista.sort((a,b)=>b.tarifa-a.tarifa)
 
 lista.forEach((p,i)=>{
 
@@ -326,7 +307,7 @@ cont.innerHTML+=card(p,i)
 
 function card(p,i){
 
-let logo=logos[p.compania]||""
+let logo=logos[p.compania] || ""
 
 let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
 
@@ -343,7 +324,11 @@ return`
 <div class="route">${p.origen} → ${p.destino}</div>
 
 <div class="company">
-<img src="${logo}"> ${p.compania}
+
+${logo?`<img class="airlogo" src="${logo}">`:``}
+
+${p.compania}
+
 </div>
 
 <div class="price">USD ${p.tarifa}</div>
@@ -363,8 +348,6 @@ ${badge}
 }
 
 document.getElementById("search").addEventListener("keyup",mostrar)
-document.getElementById("orden").addEventListener("change",mostrar)
-document.getElementById("fecha").addEventListener("change",mostrar)
 
 function abrir(i){
 
@@ -393,18 +376,6 @@ document.getElementById("modalContent").innerHTML=`
 <label>Cupos solicitados</label>
 <input id="cupos" class="input-cupos" type="number">
 
-<br>
-
-<button class="btn mail" onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}')">
-Consultar por Mail
-</button>
-
-<a class="btn whatsapp"
-target="_blank"
-href="https://wa.me/598XXXXXXXX?text=Consulta cupo ${p.origen}-${p.destino}">
-WhatsApp
-</a>
-
 </div>
 
 </div>
@@ -416,29 +387,6 @@ document.getElementById("modal").style.display="flex"
 
 function cerrar(){
 document.getElementById("modal").style.display="none"
-}
-
-function mail(origen,destino,compania,salida,regreso,tarifa,equipaje){
-
-let cupos=document.getElementById("cupos").value
-
-let asunto=`${origen} → ${destino}`
-
-let cuerpo=`
-Consulta de Cupos Aéreos
-
-Ruta: ${origen} → ${destino}
-Compañía: ${compania}
-Salida: ${salida}
-Regreso: ${regreso}
-Equipaje: ${equipaje}
-Tarifa: USD ${tarifa}
-
-Cupos solicitados: ${cupos}
-`
-
-window.location.href=`mailto:TUEMAIL@MAIL.COM?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
-
 }
 
 </script>
