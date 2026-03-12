@@ -1,36 +1,52 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-
 <meta charset="UTF-8">
-<title>Promociones Aéreas Liberty</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>Cupos Aéreos</title>
 
 <style>
 
 body{
-font-family:Poppins;
+font-family:Arial;
 margin:0;
-background:#f2f5f9;
+background:#f3f5fb;
 }
 
 header{
-background:linear-gradient(120deg,#0B3C8A,#1A73E8);
+background:#0B3C8A;
 color:white;
+padding:20px;
 text-align:center;
-padding:50px 20px;
+font-size:22px;
+font-weight:bold;
 }
 
-header h1{
-margin:0;
-font-size:34px;
+.topbar{
+max-width:1200px;
+margin:auto;
+padding:20px;
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.topbar input{
+flex:1;
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
+}
+
+.topbar select{
+padding:12px;
+border-radius:8px;
+border:1px solid #ddd;
 }
 
 .container{
 max-width:1200px;
 margin:auto;
-padding:30px;
+padding:20px;
 display:grid;
 grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
 gap:20px;
@@ -46,12 +62,12 @@ transition:0.25s;
 }
 
 .card:hover{
-transform:translateY(-4px);
+transform:translateY(-5px);
 }
 
 .card img{
 width:100%;
-height:140px;
+height:130px;
 object-fit:cover;
 }
 
@@ -59,31 +75,39 @@ object-fit:cover;
 padding:12px;
 }
 
-.badge{
-background:#1A73E8;
-color:white;
-font-size:11px;
-padding:3px 8px;
-border-radius:6px;
-display:inline-block;
-}
-
 .route{
-font-size:16px;
 font-weight:600;
-margin-top:6px;
+font-size:16px;
 }
 
 .company{
+display:flex;
+align-items:center;
+gap:6px;
 font-size:13px;
-color:#777;
+color:#666;
+margin-top:3px;
+}
+
+.company img{
+height:16px;
 }
 
 .price{
 font-size:18px;
-font-weight:700;
+font-weight:bold;
 color:#0B3C8A;
-margin-top:6px;
+margin-top:5px;
+}
+
+.badge{
+display:inline-block;
+background:#ff4d4d;
+color:white;
+font-size:11px;
+padding:4px 8px;
+border-radius:6px;
+margin-top:5px;
 }
 
 .modal{
@@ -92,25 +116,28 @@ top:0;
 left:0;
 width:100%;
 height:100%;
-background:rgba(0,0,0,0.65);
+background:rgba(0,0,0,0.6);
 display:none;
-justify-content:center;
 align-items:center;
-padding:20px;
+justify-content:center;
 }
 
 .modal-box{
 background:white;
-border-radius:16px;
-max-width:520px;
-width:100%;
+border-radius:14px;
+max-width:700px;
+width:95%;
 overflow:hidden;
-animation:fade .3s;
+}
+
+.modal-grid{
+display:grid;
+grid-template-columns:1fr 1.2fr;
 }
 
 .modal-img{
 width:100%;
-height:220px;
+height:100%;
 object-fit:cover;
 }
 
@@ -122,100 +149,92 @@ padding:25px;
 margin-top:0;
 }
 
-.info{
-margin:8px 0;
+.modal-content p{
+margin:6px 0;
 }
 
-.price-big{
-font-size:28px;
-font-weight:700;
-color:#0B3C8A;
+.input-cupos{
+width:100%;
+padding:10px;
 margin-top:10px;
-}
-
-.buttons{
-margin-top:20px;
+border-radius:6px;
+border:1px solid #ccc;
 }
 
 .btn{
-display:inline-block;
-padding:12px 20px;
-border-radius:8px;
-text-decoration:none;
+padding:12px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
 color:white;
-font-weight:500;
+margin-top:15px;
 }
 
 .mail{
-background:#1A73E8;
+background:#1a73e8;
 }
 
 .whatsapp{
 background:#25D366;
-margin-left:10px;
 }
 
 .close{
-position:absolute;
-margin:10px;
-background:white;
-border-radius:50%;
-width:32px;
-height:32px;
-display:flex;
-align-items:center;
-justify-content:center;
+float:right;
 cursor:pointer;
-font-weight:600;
-}
-
-@keyframes fade{
-from{transform:scale(.9);opacity:0}
-to{transform:scale(1);opacity:1}
+font-size:20px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-
-<h1>✈️ Promociones Aéreas Liberty</h1>
-<p>Cupos exclusivos para agencias</p>
-
+Cupos Aéreos Disponibles
 </header>
 
-<div class="container" id="cards"></div>
+<div class="topbar">
 
-<div class="modal" id="modal">
+<input id="search" placeholder="Buscar destino, origen o compañía">
 
-<div class="modal-box">
-
-<div class="close" onclick="cerrar()">✕</div>
-
-<div id="modalContent"></div>
+<select id="orden">
+<option value="">Ordenar</option>
+<option value="menor">Precio menor</option>
+<option value="mayor">Precio mayor</option>
+</select>
 
 </div>
 
+<div class="container" id="lista"></div>
+
+<div class="modal" id="modal">
+<div class="modal-box">
+<div id="modalContent"></div>
+</div>
 </div>
 
 <script>
 
-const csv="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv";
+let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-let promos=[];
+let promos=[]
 
-fetch(csv)
-.then(res=>res.text())
+let logos={
+"LA":"https://upload.wikimedia.org/wikipedia/commons/5/5b/LATAM_Airlines_logo.svg",
+"G3":"https://upload.wikimedia.org/wikipedia/commons/6/6b/Gol_Transportes_A%C3%A9reos_logo.svg",
+"AR":"https://upload.wikimedia.org/wikipedia/commons/7/73/Aerol%C3%ADneas_Argentinas_logo.svg",
+"CM":"https://upload.wikimedia.org/wikipedia/commons/6/6f/Copa_Airlines_logo.svg"
+}
+
+fetch(url)
+.then(r=>r.text())
 .then(data=>{
 
-let filas=data.split("\n").slice(1);
+let rows=data.split("\n").slice(1)
 
-filas.forEach(f=>{
+rows.forEach(r=>{
 
-let c=f.split(",");
+let c=r.split(",")
 
 promos.push({
 
@@ -225,97 +244,147 @@ compania:c[2],
 salida:c[3],
 regreso:c[4],
 disp:c[5],
-tarifa:c[6],
-equipaje:c[7],
-imagen:"https://source.unsplash.com/800x500/?"+c[1]+",travel"
+tarifa:parseInt(c[6]),
+equipaje:c[7]
 
-});
+})
 
-});
+})
 
-render();
+mostrar()
 
-});
+})
 
-function render(){
+function mostrar(){
 
-let html="";
+let cont=document.getElementById("lista")
+cont.innerHTML=""
 
-promos.forEach((p,i)=>{
+let filtro=document.getElementById("search").value.toLowerCase()
+let orden=document.getElementById("orden").value
 
-html+=`
+let lista=[...promos]
+
+lista=lista.filter(p=>
+
+p.destino.toLowerCase().includes(filtro) ||
+p.origen.toLowerCase().includes(filtro) ||
+p.compania.toLowerCase().includes(filtro)
+
+)
+
+if(orden=="menor") lista.sort((a,b)=>a.tarifa-b.tarifa)
+if(orden=="mayor") lista.sort((a,b)=>b.tarifa-a.tarifa)
+
+lista.forEach((p,i)=>{
+
+let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
+
+let logo=logos[p.compania]||""
+
+cont.innerHTML+=`
 
 <div class="card" onclick="abrir(${i})">
 
-<img src="${p.imagen}">
+<img src="avion-cupos.png">
 
 <div class="card-body">
 
-<span class="badge">Promo</span>
-
 <div class="route">${p.origen} → ${p.destino}</div>
 
-<div class="company">${p.compania}</div>
+<div class="company">
+<img src="${logo}"> ${p.compania}
+</div>
 
 <div class="price">USD ${p.tarifa}</div>
 
-</div>
+${badge}
 
 </div>
 
-`;
+</div>
 
-});
+`
 
-document.getElementById("cards").innerHTML=html;
+})
 
 }
 
+document.getElementById("search").addEventListener("keyup",mostrar)
+document.getElementById("orden").addEventListener("change",mostrar)
+
 function abrir(i){
 
-let p=promos[i];
+let p=promos[i]
 
-let html=`
+document.getElementById("modalContent").innerHTML=`
 
-<img class="modal-img" src="${p.imagen}">
+<div class="modal-grid">
+
+<img class="modal-img" src="avion-cupos.png">
 
 <div class="modal-content">
 
+<span class="close" onclick="cerrar()">✖</span>
+
 <h2>${p.origen} → ${p.destino}</h2>
 
-<div class="info">✈️ <b>Compañía:</b> ${p.compania}</div>
-<div class="info">🛫 <b>Salida:</b> ${p.salida}</div>
-<div class="info">🛬 <b>Regreso:</b> ${p.regreso}</div>
-<div class="info">🎟 <b>Cupos:</b> ${p.disp}</div>
-<div class="info">🧳 <b>Equipaje:</b> ${p.equipaje}</div>
+<p>✈️ <b>Compañía:</b> ${p.compania}</p>
+<p>🛫 <b>Salida:</b> ${p.salida}</p>
+<p>🛬 <b>Regreso:</b> ${p.regreso}</p>
+<p>🎟 <b>Cupos disponibles:</b> ${p.disp}</p>
+<p>🧳 <b>Equipaje:</b> ${p.equipaje}</p>
 
-<div class="price-big">USD ${p.tarifa}</div>
+<h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
 
-<div class="buttons">
+<label>Cupos solicitados</label>
+<input id="cupos" class="input-cupos" type="number">
 
-<a class="btn mail" href="mailto:TUEMAIL@MAIL.COM?subject=Consulta promo ${p.origen}-${p.destino}">
+<br>
+
+<button class="btn mail" onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}')">
 Consultar por Mail
-</a>
+</button>
 
-<a class="btn whatsapp" href="https://wa.me/598XXXXXXXX?text=Hola quiero consultar la promo ${p.origen}-${p.destino}">
+<a class="btn whatsapp"
+target="_blank"
+href="https://wa.me/598XXXXXXXX?text=Consulta cupo ${p.origen}-${p.destino}">
 WhatsApp
 </a>
 
 </div>
 
 </div>
+`
 
-`;
-
-document.getElementById("modalContent").innerHTML=html;
-
-document.getElementById("modal").style.display="flex";
+document.getElementById("modal").style.display="flex"
 
 }
 
 function cerrar(){
+document.getElementById("modal").style.display="none"
+}
 
-document.getElementById("modal").style.display="none";
+function mail(origen,destino,compania,salida,regreso,tarifa,equipaje){
+
+let cupos=document.getElementById("cupos").value
+
+let asunto=`${origen} → ${destino}`
+
+let cuerpo=`
+Consulta de Cupos Aéreos
+
+Ruta: ${origen} → ${destino}
+Compañía: ${compania}
+Salida: ${salida}
+Regreso: ${regreso}
+Equipaje: ${equipaje}
+Tarifa: USD ${tarifa}
+
+Cupos solicitados: ${cupos}
+`
+
+window.location.href=`mailto:TUEMAIL@MAIL.COM?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
 }
 
