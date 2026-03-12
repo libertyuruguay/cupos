@@ -46,7 +46,7 @@ max-width:1200px;
 margin:auto;
 padding:20px;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
 gap:20px;
 }
 
@@ -89,7 +89,6 @@ margin-top:4px;
 
 .airlogo{
 height:18px;
-width:auto;
 }
 
 .price{
@@ -122,6 +121,62 @@ height:6px;
 background:#ff4d4d;
 }
 
+/* MODAL */
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-box{
+background:white;
+border-radius:14px;
+max-width:720px;
+width:95%;
+overflow:hidden;
+}
+
+.modal-grid{
+display:grid;
+grid-template-columns:1fr 1.2fr;
+}
+
+.modal-img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+.modal-content{
+padding:25px;
+}
+
+.btn{
+padding:12px 16px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+color:white;
+margin-top:12px;
+margin-right:10px;
+}
+
+.mail{background:#1a73e8;}
+.whatsapp{background:#25D366;}
+
+.close{
+float:right;
+cursor:pointer;
+font-size:20px;
+}
+
 </style>
 </head>
 
@@ -138,9 +193,15 @@ background:#ff4d4d;
 
 <div class="container" id="lista"></div>
 
+<div class="modal" id="modal">
+<div class="modal-box">
+<div id="modalContent"></div>
+</div>
+</div>
+
 <script>
 
-let url="TU LINK CSV DE GOOGLE SHEETS"
+let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
 let promos=[]
 
@@ -167,8 +228,8 @@ destino:c[1],
 compania:c[2],
 salida:c[3],
 regreso:c[4],
-disp:parseInt(c[5]),
-tarifa:parseInt(c[6]),
+disp:c[5],
+tarifa:c[6],
 equipaje:c[7]
 })
 
@@ -193,17 +254,17 @@ p.compania.toLowerCase().includes(filtro)
 
 )
 
-lista.forEach((p)=>{
+lista.forEach((p,i)=>{
 
-cont.innerHTML+=card(p)
+cont.innerHTML+=card(p,i)
 
 })
 
 }
 
-function card(p){
+function card(p,i){
 
-let logo=logos[p.compania] || ""
+let logo=logos[p.compania]||""
 
 let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
 
@@ -211,7 +272,7 @@ let bar=Math.min(100,(p.disp/20)*100)
 
 return`
 
-<div class="card">
+<div class="card" onclick="abrir(${i})">
 
 <img src="avion-cupos.png">
 
@@ -241,6 +302,73 @@ ${badge}
 }
 
 document.getElementById("search").addEventListener("keyup",mostrar)
+
+function abrir(i){
+
+let p=promos[i]
+
+document.getElementById("modalContent").innerHTML=`
+
+<div class="modal-grid">
+
+<img class="modal-img" src="avion-cupos.png">
+
+<div class="modal-content">
+
+<span class="close" onclick="cerrar()">✖</span>
+
+<h2>${p.origen} → ${p.destino}</h2>
+
+<p><b>Compañía:</b> ${p.compania}</p>
+<p><b>Salida:</b> ${p.salida}</p>
+<p><b>Regreso:</b> ${p.regreso}</p>
+<p><b>Cupos:</b> ${p.disp}</p>
+<p><b>Equipaje:</b> ${p.equipaje}</p>
+
+<h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
+
+<button class="btn mail"
+onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}')">
+Consultar por Mail
+</button>
+
+<a class="btn whatsapp"
+target="_blank"
+href="https://wa.me/598XXXXXXXX?text=Consulta cupo ${p.origen}-${p.destino}">
+WhatsApp
+</a>
+
+</div>
+
+</div>
+`
+
+document.getElementById("modal").style.display="flex"
+
+}
+
+function cerrar(){
+document.getElementById("modal").style.display="none"
+}
+
+function mail(origen,destino,compania,salida,regreso,tarifa,equipaje){
+
+let asunto=`${origen} → ${destino}`
+
+let cuerpo=`
+Consulta Cupos Aéreos
+
+Ruta: ${origen} → ${destino}
+Compañía: ${compania}
+Salida: ${salida}
+Regreso: ${regreso}
+Equipaje: ${equipaje}
+Tarifa: USD ${tarifa}
+`
+
+window.location.href=`mailto:TUEMAIL@MAIL.COM?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+
+}
 
 </script>
 
