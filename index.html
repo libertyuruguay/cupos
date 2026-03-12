@@ -122,8 +122,6 @@ height:6px;
 background:#ff4d4d;
 }
 
-/* MODAL */
-
 .modal{
 position:fixed;
 top:0;
@@ -172,7 +170,6 @@ display:inline-block;
 }
 
 .mail{background:#1a73e8;}
-.whatsapp{background:#25D366;}
 
 .close{
 float:right;
@@ -325,21 +322,15 @@ document.getElementById("modalContent").innerHTML=`
 <p><b>Compañía:</b> ${p.compania}</p>
 <p><b>Salida:</b> ${p.salida}</p>
 <p><b>Regreso:</b> ${p.regreso}</p>
-<p><b>Cupos:</b> ${p.disp}</p>
+<p><b>Cupos disponibles:</b> ${p.disp}</p>
 <p><b>Equipaje:</b> ${p.equipaje}</p>
 
 <h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
 
 <button class="btn mail"
-onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}')">
+onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}','${p.disp}')">
 Consultar por Mail
 </button>
-
-<a class="btn whatsapp"
-target="_blank"
-href="https://wa.me/59893488519?text=Consulta cupo ${p.origen}-${p.destino}">
-WhatsApp
-</a>
 
 </div>
 
@@ -354,12 +345,16 @@ function cerrar(){
 document.getElementById("modal").style.display="none"
 }
 
-function mail(origen,destino,compania,salida,regreso,tarifa,equipaje){
+function mail(origen,destino,compania,salida,regreso,tarifa,equipaje,disp){
 
-let asunto=`Consulta Cupo Aéreo ${origen} - ${destino}`
+let cupos = prompt("¿Cuántos cupos desean reservar?")
 
-let cuerpo=`
-Consulta Cupos Aéreos
+if(!cupos) return
+
+let asunto = `${origen} - ${destino}`
+
+let cuerpo =
+`Solicitud de Cupos Aéreos
 
 Ruta: ${origen} → ${destino}
 Compañía: ${compania}
@@ -367,9 +362,14 @@ Salida: ${salida}
 Regreso: ${regreso}
 Equipaje: ${equipaje}
 Tarifa: USD ${tarifa}
+
+Cupos solicitados: ${cupos}
+
+Disponibilidad informada: ${disp}
 `
 
-window.location.href=`mailto:TUEMAIL@MAIL.COM?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+window.location.href =
+`mailto:reservas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
 }
 
