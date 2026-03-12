@@ -37,14 +37,7 @@ gap:10px;
 flex-wrap:wrap;
 }
 
-.topbar input{
-flex:1;
-padding:12px;
-border-radius:8px;
-border:1px solid #ddd;
-}
-
-.topbar select{
+.topbar input, .topbar select{
 padding:12px;
 border-radius:8px;
 border:1px solid #ddd;
@@ -93,28 +86,55 @@ align-items:center;
 gap:6px;
 font-size:13px;
 color:#666;
-margin-top:3px;
 }
 
 .company img{
-height:16px;
+height:18px;
 }
 
 .price{
 font-size:18px;
 font-weight:bold;
 color:#0B3C8A;
-margin-top:5px;
 }
 
 .badge{
-display:inline-block;
 background:#ff4d4d;
 color:white;
 font-size:11px;
 padding:4px 8px;
 border-radius:6px;
+display:inline-block;
 margin-top:5px;
+}
+
+.bar{
+height:6px;
+background:#eee;
+border-radius:4px;
+margin-top:6px;
+overflow:hidden;
+}
+
+.bar div{
+height:6px;
+background:#ff4d4d;
+}
+
+.featured{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.featured h2{
+margin-bottom:10px;
+}
+
+.featured-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:15px;
 }
 
 .modal{
@@ -152,14 +172,6 @@ object-fit:cover;
 padding:25px;
 }
 
-.modal-content h2{
-margin-top:0;
-}
-
-.modal-content p{
-margin:6px 0;
-}
-
 .input-cupos{
 width:100%;
 padding:10px;
@@ -177,13 +189,8 @@ color:white;
 margin-top:15px;
 }
 
-.mail{
-background:#1a73e8;
-}
-
-.whatsapp{
-background:#25D366;
-}
+.mail{background:#1a73e8;}
+.whatsapp{background:#25D366;}
 
 .close{
 float:right;
@@ -197,7 +204,7 @@ font-size:20px;
 <body>
 
 <div class="header">
-<img src="_Logo Liberty Blanco-01.png" class="logo">
+<img src="_Logotipo Liberty Blanco-01.png" class="logo">
 <span>Cupos Aéreos Disponibles</span>
 </div>
 
@@ -205,12 +212,19 @@ font-size:20px;
 
 <input id="search" placeholder="Buscar destino, origen o compañía">
 
+<input type="date" id="fecha">
+
 <select id="orden">
 <option value="">Ordenar</option>
 <option value="menor">Precio menor</option>
 <option value="mayor">Precio mayor</option>
 </select>
 
+</div>
+
+<div class="featured">
+<h2>🔥 Cupos Destacados</h2>
+<div class="featured-grid" id="destacados"></div>
 </div>
 
 <div class="container" id="lista"></div>
@@ -228,10 +242,10 @@ let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5
 let promos=[]
 
 let logos={
-"LA":"https://upload.wikimedia.org/wikipedia/commons/5/5b/LATAM_Airlines_logo.svg",
-"G3":"https://upload.wikimedia.org/wikipedia/commons/6/6b/Gol_Transportes_A%C3%A9reos_logo.svg",
-"AR":"https://upload.wikimedia.org/wikipedia/commons/7/73/Aerol%C3%ADneas_Argentinas_logo.svg",
-"CM":"https://upload.wikimedia.org/wikipedia/commons/6/6f/Copa_Airlines_logo.svg"
+"LA":"https://content.airhex.com/content/logos/airlines_LA_200_200_s.png",
+"G3":"https://content.airhex.com/content/logos/airlines_G3_200_200_s.png",
+"AR":"https://content.airhex.com/content/logos/airlines_AR_200_200_s.png",
+"CM":"https://content.airhex.com/content/logos/airlines_CM_200_200_s.png"
 }
 
 fetch(url)
@@ -245,23 +259,36 @@ rows.forEach(r=>{
 let c=r.split(",")
 
 promos.push({
-
 origen:c[0],
 destino:c[1],
 compania:c[2],
 salida:c[3],
 regreso:c[4],
-disp:c[5],
+disp:parseInt(c[5]),
 tarifa:parseInt(c[6]),
 equipaje:c[7]
-
 })
 
 })
 
 mostrar()
+destacados()
 
 })
+
+function destacados(){
+
+let top=[...promos].sort((a,b)=>a.tarifa-b.tarifa).slice(0,3)
+
+let cont=document.getElementById("destacados")
+
+top.forEach((p,i)=>{
+
+cont.innerHTML+=card(p,i)
+
+})
+
+}
 
 function mostrar(){
 
@@ -269,6 +296,7 @@ let cont=document.getElementById("lista")
 cont.innerHTML=""
 
 let filtro=document.getElementById("search").value.toLowerCase()
+let fecha=document.getElementById("fecha").value
 let orden=document.getElementById("orden").value
 
 let lista=[...promos]
@@ -281,15 +309,30 @@ p.compania.toLowerCase().includes(filtro)
 
 )
 
+if(fecha!=""){
+lista=lista.filter(p=>p.salida.includes(fecha))
+}
+
 if(orden=="menor") lista.sort((a,b)=>a.tarifa-b.tarifa)
 if(orden=="mayor") lista.sort((a,b)=>b.tarifa-a.tarifa)
 
 lista.forEach((p,i)=>{
 
-let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
+cont.innerHTML+=card(p,i)
+
+})
+
+}
+
+function card(p,i){
+
 let logo=logos[p.compania]||""
 
-cont.innerHTML+=`
+let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
+
+let bar=Math.min(100,(p.disp/20)*100)
+
+return`
 
 <div class="card" onclick="abrir(${i})">
 
@@ -307,18 +350,21 @@ cont.innerHTML+=`
 
 ${badge}
 
+<div class="bar">
+<div style="width:${bar}%"></div>
+</div>
+
 </div>
 
 </div>
 
 `
 
-})
-
 }
 
 document.getElementById("search").addEventListener("keyup",mostrar)
 document.getElementById("orden").addEventListener("change",mostrar)
+document.getElementById("fecha").addEventListener("change",mostrar)
 
 function abrir(i){
 
@@ -336,11 +382,11 @@ document.getElementById("modalContent").innerHTML=`
 
 <h2>${p.origen} → ${p.destino}</h2>
 
-<p>✈️ <b>Compañía:</b> ${p.compania}</p>
-<p>🛫 <b>Salida:</b> ${p.salida}</p>
-<p>🛬 <b>Regreso:</b> ${p.regreso}</p>
-<p>🎟 <b>Cupos disponibles:</b> ${p.disp}</p>
-<p>🧳 <b>Equipaje:</b> ${p.equipaje}</p>
+<p><b>Compañía:</b> ${p.compania}</p>
+<p><b>Salida:</b> ${p.salida}</p>
+<p><b>Regreso:</b> ${p.regreso}</p>
+<p><b>Cupos disponibles:</b> ${p.disp}</p>
+<p><b>Equipaje:</b> ${p.equipaje}</p>
 
 <h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
 
