@@ -19,28 +19,26 @@ padding:18px;
 display:flex;
 align-items:center;
 justify-content:center;
-gap:20px;
+gap:15px;
 font-size:22px;
 font-weight:bold;
 }
 
 .logo{
-height:40px;
+height:45px;
 }
 
 .topbar{
 max-width:1200px;
 margin:auto;
 padding:20px;
-display:flex;
-gap:10px;
-flex-wrap:wrap;
 }
 
 .topbar input{
 padding:12px;
 border-radius:8px;
 border:1px solid #ddd;
+width:260px;
 }
 
 .container{
@@ -90,7 +88,8 @@ margin-top:4px;
 }
 
 .airlogo{
-height:16px;
+height:18px;
+width:auto;
 }
 
 .price{
@@ -123,83 +122,6 @@ height:6px;
 background:#ff4d4d;
 }
 
-.featured{
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
-
-.featured h2{
-margin-bottom:10px;
-}
-
-.featured-grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:15px;
-}
-
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.6);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-box{
-background:white;
-border-radius:14px;
-max-width:700px;
-width:95%;
-overflow:hidden;
-}
-
-.modal-grid{
-display:grid;
-grid-template-columns:1fr 1.2fr;
-}
-
-.modal-img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.modal-content{
-padding:25px;
-}
-
-.input-cupos{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:6px;
-border:1px solid #ccc;
-}
-
-.btn{
-padding:12px 16px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-color:white;
-margin-top:15px;
-}
-
-.mail{background:#1a73e8;}
-.whatsapp{background:#25D366;}
-
-.close{
-float:right;
-cursor:pointer;
-font-size:20px;
-}
-
 </style>
 </head>
 
@@ -214,30 +136,19 @@ font-size:20px;
 <input id="search" placeholder="Buscar destino, origen o compañía">
 </div>
 
-<div class="featured">
-<h2>🔥 Cupos Destacados</h2>
-<div class="featured-grid" id="destacados"></div>
-</div>
-
 <div class="container" id="lista"></div>
-
-<div class="modal" id="modal">
-<div class="modal-box">
-<div id="modalContent"></div>
-</div>
-</div>
 
 <script>
 
-let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+let url="TU LINK CSV DE GOOGLE SHEETS"
 
 let promos=[]
 
 let logos={
-"LA":"https://content.airhex.com/content/logos/airlines_LA_200_200_s.png",
-"G3":"https://content.airhex.com/content/logos/airlines_G3_200_200_s.png",
-"AR":"https://content.airhex.com/content/logos/airlines_AR_200_200_s.png",
-"CM":"https://content.airhex.com/content/logos/airlines_CM_200_200_s.png"
+"LA":"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/LATAM_Airlines_logo.svg/200px-LATAM_Airlines_logo.svg.png",
+"G3":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Gol_Linhas_A%C3%A9reas_logo.svg/200px-Gol_Linhas_A%C3%A9reas_logo.svg.png",
+"AR":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aerol%C3%ADneas_Argentinas_logo.svg/200px-Aerol%C3%ADneas_Argentinas_logo.svg.png",
+"CM":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Copa_Airlines_logo.svg/200px-Copa_Airlines_logo.svg.png"
 }
 
 fetch(url)
@@ -264,23 +175,8 @@ equipaje:c[7]
 })
 
 mostrar()
-destacados()
 
 })
-
-function destacados(){
-
-let top=[...promos].slice(0,3)
-
-let cont=document.getElementById("destacados")
-
-top.forEach((p,i)=>{
-
-cont.innerHTML+=card(p,i)
-
-})
-
-}
 
 function mostrar(){
 
@@ -297,15 +193,15 @@ p.compania.toLowerCase().includes(filtro)
 
 )
 
-lista.forEach((p,i)=>{
+lista.forEach((p)=>{
 
-cont.innerHTML+=card(p,i)
+cont.innerHTML+=card(p)
 
 })
 
 }
 
-function card(p,i){
+function card(p){
 
 let logo=logos[p.compania] || ""
 
@@ -315,7 +211,7 @@ let bar=Math.min(100,(p.disp/20)*100)
 
 return`
 
-<div class="card" onclick="abrir(${i})">
+<div class="card">
 
 <img src="avion-cupos.png">
 
@@ -324,11 +220,8 @@ return`
 <div class="route">${p.origen} → ${p.destino}</div>
 
 <div class="company">
-
 ${logo?`<img class="airlogo" src="${logo}">`:``}
-
 ${p.compania}
-
 </div>
 
 <div class="price">USD ${p.tarifa}</div>
@@ -348,46 +241,6 @@ ${badge}
 }
 
 document.getElementById("search").addEventListener("keyup",mostrar)
-
-function abrir(i){
-
-let p=promos[i]
-
-document.getElementById("modalContent").innerHTML=`
-
-<div class="modal-grid">
-
-<img class="modal-img" src="avion-cupos.png">
-
-<div class="modal-content">
-
-<span class="close" onclick="cerrar()">✖</span>
-
-<h2>${p.origen} → ${p.destino}</h2>
-
-<p><b>Compañía:</b> ${p.compania}</p>
-<p><b>Salida:</b> ${p.salida}</p>
-<p><b>Regreso:</b> ${p.regreso}</p>
-<p><b>Cupos disponibles:</b> ${p.disp}</p>
-<p><b>Equipaje:</b> ${p.equipaje}</p>
-
-<h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
-
-<label>Cupos solicitados</label>
-<input id="cupos" class="input-cupos" type="number">
-
-</div>
-
-</div>
-`
-
-document.getElementById("modal").style.display="flex"
-
-}
-
-function cerrar(){
-document.getElementById("modal").style.display="none"
-}
 
 </script>
 
