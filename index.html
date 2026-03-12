@@ -46,7 +46,7 @@ max-width:1200px;
 margin:auto;
 padding:20px;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
 gap:20px;
 }
 
@@ -55,27 +55,22 @@ background:white;
 border-radius:12px;
 overflow:hidden;
 box-shadow:0 6px 18px rgba(0,0,0,0.08);
-cursor:pointer;
-transition:0.25s;
-}
-
-.card:hover{
-transform:translateY(-5px);
 }
 
 .card img{
 width:100%;
-height:130px;
+height:120px;
 object-fit:cover;
 }
 
 .card-body{
-padding:12px;
+padding:15px;
 }
 
 .route{
 font-weight:600;
 font-size:16px;
+margin-bottom:5px;
 }
 
 .company{
@@ -83,20 +78,23 @@ display:flex;
 align-items:center;
 gap:6px;
 font-size:13px;
-color:#666;
-margin-top:4px;
+color:#555;
 }
 
 .airlogo{
 height:16px;
-width:auto;
+}
+
+.info{
+font-size:13px;
+margin-top:6px;
 }
 
 .price{
-font-size:18px;
+font-size:20px;
 font-weight:bold;
 color:#0B3C8A;
-margin-top:6px;
+margin-top:10px;
 }
 
 .badge{
@@ -106,75 +104,34 @@ font-size:11px;
 padding:4px 8px;
 border-radius:6px;
 display:inline-block;
-margin-top:5px;
-}
-
-.bar{
-height:6px;
-background:#eee;
-border-radius:4px;
 margin-top:6px;
-overflow:hidden;
 }
 
-.bar div{
-height:6px;
-background:#ff4d4d;
-}
-
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.6);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-box{
-background:white;
-border-radius:14px;
-max-width:720px;
-width:95%;
-overflow:hidden;
-}
-
-.modal-grid{
-display:grid;
-grid-template-columns:1fr 1.2fr;
-}
-
-.modal-img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-.modal-content{
-padding:25px;
+.buttons{
+margin-top:12px;
+display:flex;
+gap:8px;
+flex-wrap:wrap;
 }
 
 .btn{
-padding:12px 16px;
+flex:1;
+padding:10px;
 border:none;
 border-radius:6px;
 cursor:pointer;
 color:white;
-margin-top:12px;
-margin-right:10px;
+font-size:13px;
+text-align:center;
 text-decoration:none;
-display:inline-block;
 }
 
-.mail{background:#1a73e8;}
+.mail{
+background:#1a73e8;
+}
 
-.close{
-float:right;
-cursor:pointer;
-font-size:20px;
+.whatsapp{
+background:#25D366;
 }
 
 </style>
@@ -192,12 +149,6 @@ font-size:20px;
 </div>
 
 <div class="container" id="lista"></div>
-
-<div class="modal" id="modal">
-<div class="modal-box">
-<div id="modalContent"></div>
-</div>
-</div>
 
 <script>
 
@@ -254,25 +205,23 @@ p.compania.toLowerCase().includes(filtro)
 
 )
 
-lista.forEach((p,i)=>{
+lista.forEach(p=>{
 
-cont.innerHTML+=card(p,i)
+cont.innerHTML+=card(p)
 
 })
 
 }
 
-function card(p,i){
+function card(p){
 
 let logo=logos[p.compania]||""
 
 let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
 
-let bar=Math.min(100,(p.disp/20)*100)
-
 return`
 
-<div class="card" onclick="abrir(${i})">
+<div class="card">
 
 <img src="avion-cupos.png">
 
@@ -285,12 +234,28 @@ ${logo?`<img class="airlogo" src="${logo}" onerror="this.style.display='none'">`
 ${p.compania}
 </div>
 
+<div class="info"><b>Salida:</b> ${p.salida}</div>
+<div class="info"><b>Regreso:</b> ${p.regreso}</div>
+<div class="info"><b>Equipaje:</b> ${p.equipaje}</div>
+<div class="info"><b>Cupos:</b> ${p.disp}</div>
+
 <div class="price">USD ${p.tarifa}</div>
 
 ${badge}
 
-<div class="bar">
-<div style="width:${bar}%"></div>
+<div class="buttons">
+
+<button class="btn mail"
+onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}','${p.disp}')">
+Consultar Mail
+</button>
+
+<a class="btn whatsapp"
+target="_blank"
+href="https://wa.me/598XXXXXXXX?text=Consulta%20cupos%20${p.origen}%20-%20${p.destino}">
+WhatsApp
+</a>
+
 </div>
 
 </div>
@@ -303,57 +268,15 @@ ${badge}
 
 document.getElementById("search").addEventListener("keyup",mostrar)
 
-function abrir(i){
-
-let p=promos[i]
-
-document.getElementById("modalContent").innerHTML=`
-
-<div class="modal-grid">
-
-<img class="modal-img" src="avion-cupos.png">
-
-<div class="modal-content">
-
-<span class="close" onclick="cerrar()">✖</span>
-
-<h2>${p.origen} → ${p.destino}</h2>
-
-<p><b>Compañía:</b> ${p.compania}</p>
-<p><b>Salida:</b> ${p.salida}</p>
-<p><b>Regreso:</b> ${p.regreso}</p>
-<p><b>Cupos disponibles:</b> ${p.disp}</p>
-<p><b>Equipaje:</b> ${p.equipaje}</p>
-
-<h3 style="color:#0B3C8A">USD ${p.tarifa}</h3>
-
-<button class="btn mail"
-onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}','${p.disp}')">
-Consultar por Mail
-</button>
-
-</div>
-
-</div>
-`
-
-document.getElementById("modal").style.display="flex"
-
-}
-
-function cerrar(){
-document.getElementById("modal").style.display="none"
-}
-
 function mail(origen,destino,compania,salida,regreso,tarifa,equipaje,disp){
 
-let cupos = prompt("¿Cuántos cupos desean reservar?")
+let cupos=prompt("¿Cuántos cupos desean reservar?")
 
 if(!cupos) return
 
-let asunto = `${origen} - ${destino}`
+let asunto=`${origen} - ${destino}`
 
-let cuerpo =
+let cuerpo=
 `Solicitud de Cupos Aéreos
 
 Ruta: ${origen} → ${destino}
@@ -368,8 +291,7 @@ Cupos solicitados: ${cupos}
 Disponibilidad informada: ${disp}
 `
 
-window.location.href =
-`mailto:reservas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+window.location.href=`mailto:reservas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
 }
 
