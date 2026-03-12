@@ -10,102 +10,111 @@
 <style>
 
 body{
-margin:0;
 font-family:Poppins;
 background:#f4f7fb;
+margin:0;
 }
 
 header{
 background:linear-gradient(135deg,#0B3C8A,#1A73E8);
 color:white;
 text-align:center;
-padding:60px 20px;
-}
-
-header h1{
-margin:0;
-font-size:36px;
-}
-
-.search{
-background:white;
-max-width:1000px;
-margin:auto;
-margin-top:-40px;
-padding:25px;
-border-radius:12px;
-box-shadow:0 10px 30px rgba(0,0,0,0.1);
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-justify-content:center;
-}
-
-.search input{
-padding:14px;
-border-radius:8px;
-border:1px solid #ddd;
-width:200px;
-}
-
-.search button{
-background:#1A73E8;
-color:white;
-border:none;
-padding:14px 25px;
-border-radius:8px;
+padding:50px;
+font-size:28px;
 font-weight:600;
-cursor:pointer;
 }
 
-.results{
-max-width:1000px;
-margin:40px auto;
+.container{
+max-width:1200px;
+margin:auto;
+padding:30px;
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
 }
 
 .card{
 background:white;
 border-radius:12px;
-padding:20px;
-margin-bottom:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-box-shadow:0 5px 20px rgba(0,0,0,0.08);
+overflow:hidden;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+cursor:pointer;
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card img{
+width:100%;
+height:180px;
+object-fit:cover;
+}
+
+.card-body{
+padding:15px;
 }
 
 .route{
-font-size:20px;
 font-weight:600;
+font-size:18px;
 }
 
 .company{
 color:#777;
-}
-
-.flight{
-margin-top:10px;
-}
-
-.disp{
-color:green;
-font-weight:600;
+font-size:14px;
 }
 
 .price{
-font-size:26px;
+margin-top:10px;
+font-size:20px;
 font-weight:600;
 color:#0B3C8A;
 }
 
+.modal{
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:white;
+padding:30px;
+border-radius:12px;
+max-width:500px;
+width:90%;
+}
+
 .btn{
-background:#1A73E8;
-color:white;
-padding:10px 20px;
+display:inline-block;
+margin-top:15px;
+padding:12px 20px;
 border-radius:8px;
 text-decoration:none;
-display:inline-block;
-margin-top:10px;
+color:white;
+}
+
+.mail{
+background:#1A73E8;
+}
+
+.whatsapp{
+background:#25D366;
+margin-left:10px;
+}
+
+.close{
+float:right;
+cursor:pointer;
+font-size:20px;
 }
 
 </style>
@@ -115,30 +124,30 @@ margin-top:10px;
 <body>
 
 <header>
-
-<h1>✈️ Cupos Aéreos Liberty</h1>
-<p>Consulta disponibilidad para agencias</p>
-
+✈️ Promociones Aéreas Liberty
 </header>
 
-<div class="search">
+<div class="container" id="cards"></div>
 
-<input id="origen" placeholder="Origen">
-<input id="destino" placeholder="Destino">
+<div class="modal" id="modal">
 
-<button onclick="buscar()">Buscar</button>
+<div class="modal-content">
+
+<span class="close" onclick="cerrar()">✖</span>
+
+<div id="modalInfo"></div>
 
 </div>
 
-<div class="results" id="resultados"></div>
+</div>
 
 <script>
 
-const url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv";
+const csv="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv";
 
 let vuelos=[];
 
-fetch(url)
+fetch(csv)
 .then(res=>res.text())
 .then(data=>{
 
@@ -148,8 +157,7 @@ filas.forEach(f=>{
 
 let c=f.split(",");
 
-vuelos.push({
-
+let vuelo={
 origen:c[0],
 destino:c[1],
 compania:c[2],
@@ -157,82 +165,37 @@ salida:c[3],
 regreso:c[4],
 disponibilidad:c[5],
 tarifa:c[6],
-equipaje:c[7]
+equipaje:c[7],
+imagen:"https://source.unsplash.com/600x400/?airplane,travel"
+};
+
+vuelos.push(vuelo);
 
 });
 
-});
-
-mostrar(vuelos);
+crearCards();
 
 });
 
-function buscar(){
-
-let origen=document.getElementById("origen").value.toLowerCase();
-let destino=document.getElementById("destino").value.toLowerCase();
-
-let filtrado=vuelos.filter(v=>
-
-(!origen || v.origen.toLowerCase().includes(origen)) &&
-(!destino || v.destino.toLowerCase().includes(destino))
-
-);
-
-mostrar(filtrado);
-
-}
-
-function mostrar(lista){
+function crearCards(){
 
 let html="";
 
-lista.forEach(v=>{
+vuelos.forEach((v,i)=>{
 
 html+=`
 
-<div class="card">
+<div class="card" onclick="abrir(${i})">
 
-<div>
+<img src="${v.imagen}">
+
+<div class="card-body">
 
 <div class="route">${v.origen} → ${v.destino}</div>
 
 <div class="company">${v.compania}</div>
 
-<div class="flight">
-
-🛫 Salida: ${v.salida}<br>
-🛬 Regreso: ${v.regreso}
-
-</div>
-
-<div class="disp">
-
-Disponibilidad: ${v.disponibilidad}
-
-</div>
-
-<div>
-
-🧳 Equipaje: ${v.equipaje}
-
-</div>
-
-</div>
-
-<div>
-
-<div class="price">
-
-USD ${v.tarifa}
-
-</div>
-
-<a class="btn" href="mailto:ventas@libertyuruguay.com.uy?subject=Cupo ${v.origen}-${v.destino}">
-
-Consultar
-
-</a>
+<div class="price">USD ${v.tarifa}</div>
 
 </div>
 
@@ -242,7 +205,42 @@ Consultar
 
 });
 
-document.getElementById("resultados").innerHTML=html;
+document.getElementById("cards").innerHTML=html;
+
+}
+
+function abrir(i){
+
+let v=vuelos[i];
+
+let texto=`
+<h2>${v.origen} → ${v.destino}</h2>
+
+<p><b>Compañía:</b> ${v.compania}</p>
+<p><b>Salida:</b> ${v.salida}</p>
+<p><b>Regreso:</b> ${v.regreso}</p>
+<p><b>Disponibilidad:</b> ${v.disponibilidad}</p>
+<p><b>Equipaje:</b> ${v.equipaje}</p>
+<p><b>Tarifa:</b> USD ${v.tarifa}</p>
+
+<a class="btn mail" href="mailto:MAIL@LIBERTY.COM?subject=Consulta ${v.origen}-${v.destino}">
+Consultar por Mail
+</a>
+
+<a class="btn whatsapp" href="https://wa.me/NUMERO?text=Consulta ${v.origen}-${v.destino}">
+WhatsApp
+</a>
+`;
+
+document.getElementById("modalInfo").innerHTML=texto;
+
+document.getElementById("modal").style.display="flex";
+
+}
+
+function cerrar(){
+
+document.getElementById("modal").style.display="none";
 
 }
 
