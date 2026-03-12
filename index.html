@@ -173,7 +173,7 @@ rows.forEach(r=>{
 
 let c=r.split(",")
 
-promos.push({
+let promo={
 origen:c[0],
 destino:c[1],
 compania:c[2],
@@ -182,7 +182,9 @@ regreso:c[4],
 disp:c[5],
 tarifa:c[6],
 equipaje:c[7]
-})
+}
+
+promos.push(promo)
 
 })
 
@@ -237,7 +239,7 @@ ${p.compania}
 <div class="info"><b>Salida:</b> ${p.salida}</div>
 <div class="info"><b>Regreso:</b> ${p.regreso}</div>
 <div class="info"><b>Equipaje:</b> ${p.equipaje}</div>
-<div class="info"><b>Cupos:</b> ${p.disp}</div>
+<div class="info"><b>Cupos disponibles:</b> ${p.disp}</div>
 
 <div class="price">USD ${p.tarifa}</div>
 
@@ -245,14 +247,13 @@ ${badge}
 
 <div class="buttons">
 
-<button class="btn mail"
-onclick="mail('${p.origen}','${p.destino}','${p.compania}','${p.salida}','${p.regreso}','${p.tarifa}','${p.equipaje}','${p.disp}')">
+<button class="btn mail" onclick='mail(${JSON.stringify(p)})'>
 Consultar Mail
 </button>
 
 <a class="btn whatsapp"
 target="_blank"
-href="https://wa.me/598XXXXXXXX?text=Consulta%20cupos%20${p.origen}%20-%20${p.destino}">
+href="https://wa.me/59893488519?text=Consulta%20cupo%20${p.origen}%20-%20${p.destino}">
 WhatsApp
 </a>
 
@@ -268,27 +269,27 @@ WhatsApp
 
 document.getElementById("search").addEventListener("keyup",mostrar)
 
-function mail(origen,destino,compania,salida,regreso,tarifa,equipaje,disp){
+function mail(p){
 
 let cupos=prompt("¿Cuántos cupos desean reservar?")
 
 if(!cupos) return
 
-let asunto=`${origen} - ${destino}`
+let asunto=`${p.origen} - ${p.destino}`
 
 let cuerpo=
 `Solicitud de Cupos Aéreos
 
-Ruta: ${origen} → ${destino}
-Compañía: ${compania}
-Salida: ${salida}
-Regreso: ${regreso}
-Equipaje: ${equipaje}
-Tarifa: USD ${tarifa}
+Ruta: ${p.origen} → ${p.destino}
+Compañía: ${p.compania}
+Salida: ${p.salida}
+Regreso: ${p.regreso}
+Equipaje: ${p.equipaje}
+Tarifa: USD ${p.tarifa}
 
 Cupos solicitados: ${cupos}
 
-Disponibilidad informada: ${disp}
+Disponibilidad informada: ${p.disp}
 `
 
 window.location.href=`mailto:reservas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
