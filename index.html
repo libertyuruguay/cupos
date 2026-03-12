@@ -7,71 +7,94 @@
 <style>
 
 body{
-font-family:Arial;
+font-family: 'Segoe UI', sans-serif;
 margin:0;
-background:#f3f5fb;
+background:linear-gradient(135deg,#eef2ff,#f7f9ff);
 }
+
+/* HEADER */
 
 .header{
 background:#0B3C8A;
 color:white;
-padding:18px;
+padding:20px;
 display:flex;
 align-items:center;
 justify-content:center;
 gap:15px;
 font-size:22px;
-font-weight:bold;
+font-weight:600;
+box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
 
 .logo{
 height:45px;
 }
 
+/* BUSCADOR */
+
 .topbar{
 max-width:1200px;
 margin:auto;
-padding:20px;
+padding:30px 20px 10px;
 }
 
 .topbar input{
-padding:12px;
-border-radius:8px;
-border:1px solid #ddd;
-width:260px;
+width:100%;
+max-width:400px;
+padding:14px;
+border-radius:30px;
+border:none;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+font-size:14px;
+outline:none;
 }
+
+/* GRID */
 
 .container{
 max-width:1200px;
 margin:auto;
 padding:20px;
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-gap:20px;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:25px;
 }
+
+/* CARD */
 
 .card{
 background:white;
-border-radius:12px;
+border-radius:16px;
 overflow:hidden;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 30px rgba(0,0,0,0.15);
 }
 
 .card img{
 width:100%;
-height:120px;
+height:140px;
 object-fit:cover;
 }
 
 .card-body{
-padding:15px;
+padding:18px;
 }
 
+/* RUTA */
+
 .route{
+font-size:18px;
 font-weight:600;
-font-size:16px;
-margin-bottom:5px;
+margin-bottom:6px;
 }
+
+/* AIRLINE */
 
 .company{
 display:flex;
@@ -79,59 +102,78 @@ align-items:center;
 gap:6px;
 font-size:13px;
 color:#555;
+margin-bottom:10px;
 }
 
 .airlogo{
-height:16px;
+height:18px;
 }
+
+/* INFO */
 
 .info{
 font-size:13px;
-margin-top:6px;
+margin:4px 0;
+color:#444;
 }
 
+/* PRECIO */
+
 .price{
-font-size:20px;
-font-weight:bold;
+font-size:22px;
+font-weight:700;
 color:#0B3C8A;
-margin-top:10px;
+margin-top:12px;
 }
+
+/* CUPOS */
 
 .badge{
 background:#ff4d4d;
 color:white;
 font-size:11px;
-padding:4px 8px;
-border-radius:6px;
+padding:5px 9px;
+border-radius:20px;
 display:inline-block;
 margin-top:6px;
 }
 
+/* BOTONES */
+
 .buttons{
-margin-top:12px;
+margin-top:15px;
 display:flex;
-gap:8px;
-flex-wrap:wrap;
+gap:10px;
 }
 
 .btn{
 flex:1;
 padding:10px;
 border:none;
-border-radius:6px;
+border-radius:8px;
 cursor:pointer;
-color:white;
 font-size:13px;
+font-weight:600;
+color:white;
 text-align:center;
 text-decoration:none;
+transition:0.2s;
 }
 
 .mail{
 background:#1a73e8;
 }
 
+.mail:hover{
+background:#1559b7;
+}
+
 .whatsapp{
 background:#25D366;
+}
+
+.whatsapp:hover{
+background:#1fb856;
 }
 
 </style>
@@ -141,11 +183,11 @@ background:#25D366;
 
 <div class="header">
 <img src="liberty.png" class="logo">
-<span>Cupos Aéreos Disponibles</span>
+<span>Cupos Aéreos Liberty</span>
 </div>
 
 <div class="topbar">
-<input id="search" placeholder="Buscar destino, origen o compañía">
+<input id="search" placeholder="Buscar destino, origen o aerolínea">
 </div>
 
 <div class="container" id="lista"></div>
@@ -173,7 +215,7 @@ rows.forEach(r=>{
 
 let c=r.split(",")
 
-let promo={
+promos.push({
 origen:c[0],
 destino:c[1],
 compania:c[2],
@@ -182,9 +224,7 @@ regreso:c[4],
 disp:c[5],
 tarifa:c[6],
 equipaje:c[7]
-}
-
-promos.push(promo)
+})
 
 })
 
@@ -253,7 +293,7 @@ Consultar Mail
 
 <a class="btn whatsapp"
 target="_blank"
-href="https://wa.me/59893488519?text=Consulta%20cupo%20${p.origen}%20-%20${p.destino}">
+href="https://wa.me/598XXXXXXXX?text=Consulta%20cupo%20${p.origen}%20-%20${p.destino}">
 WhatsApp
 </a>
 
