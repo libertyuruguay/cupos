@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Cupos Aéreos</title>
+<title>Cupos Aéreos Liberty</title>
 
 <style>
 
@@ -12,13 +12,20 @@ margin:0;
 background:#f3f5fb;
 }
 
-header{
+.header{
 background:#0B3C8A;
 color:white;
-padding:20px;
-text-align:center;
+padding:18px;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:20px;
 font-size:22px;
 font-weight:bold;
+}
+
+.logo{
+height:40px;
 }
 
 .topbar{
@@ -189,9 +196,10 @@ font-size:20px;
 
 <body>
 
-<header>
-Cupos Aéreos Disponibles
-</header>
+<div class="header">
+<img src="_Logo Liberty Blanco-01.png" class="logo">
+<span>Cupos Aéreos Disponibles</span>
+</div>
 
 <div class="topbar">
 
@@ -279,7 +287,6 @@ if(orden=="mayor") lista.sort((a,b)=>b.tarifa-a.tarifa)
 lista.forEach((p,i)=>{
 
 let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
-
 let logo=logos[p.compania]||""
 
 cont.innerHTML+=`
