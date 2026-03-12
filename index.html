@@ -88,7 +88,8 @@ margin-top:4px;
 }
 
 .airlogo{
-height:18px;
+height:16px;
+width:auto;
 }
 
 .price{
@@ -166,6 +167,8 @@ cursor:pointer;
 color:white;
 margin-top:12px;
 margin-right:10px;
+text-decoration:none;
+display:inline-block;
 }
 
 .mail{background:#1a73e8;}
@@ -206,10 +209,10 @@ let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5
 let promos=[]
 
 let logos={
-"LA":"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/LATAM_Airlines_logo.svg/200px-LATAM_Airlines_logo.svg.png",
-"G3":"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Gol_Linhas_A%C3%A9reas_logo.svg/200px-Gol_Linhas_A%C3%A9reas_logo.svg.png",
-"AR":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Aerol%C3%ADneas_Argentinas_logo.svg/200px-Aerol%C3%ADneas_Argentinas_logo.svg.png",
-"CM":"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Copa_Airlines_logo.svg/200px-Copa_Airlines_logo.svg.png"
+"LA":"https://logo.clearbit.com/latam.com",
+"G3":"https://logo.clearbit.com/voegol.com.br",
+"AR":"https://logo.clearbit.com/aerolineas.com.ar",
+"CM":"https://logo.clearbit.com/copaair.com"
 }
 
 fetch(url)
@@ -281,7 +284,7 @@ return`
 <div class="route">${p.origen} → ${p.destino}</div>
 
 <div class="company">
-${logo?`<img class="airlogo" src="${logo}">`:``}
+${logo?`<img class="airlogo" src="${logo}" onerror="this.style.display='none'">`:``}
 ${p.compania}
 </div>
 
@@ -353,7 +356,7 @@ document.getElementById("modal").style.display="none"
 
 function mail(origen,destino,compania,salida,regreso,tarifa,equipaje){
 
-let asunto=`${origen} → ${destino}`
+let asunto=`Consulta Cupo Aéreo ${origen} - ${destino}`
 
 let cuerpo=`
 Consulta Cupos Aéreos
