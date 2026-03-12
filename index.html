@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cupos Aéreos Liberty</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f5f7fa;
+margin:0;
+}
+
+header{
+background:#0B3C8A;
+color:white;
+padding:20px;
+font-size:24px;
+font-weight:bold;
+text-align:center;
+}
+
+.search{
+background:white;
+padding:25px;
+max-width:900px;
+margin:auto;
+margin-top:40px;
+border-radius:10px;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+justify-content:center;
+}
+
+.search input{
+padding:12px;
+border:1px solid #ddd;
+border-radius:6px;
+width:180px;
+}
+
+.search button{
+background:#1A73E8;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.results{
+max-width:900px;
+margin:auto;
+margin-top:40px;
+}
+
+.card{
+background:white;
+border-radius:10px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 4px 10px rgba(0,0,0,0.1);
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.route{
+font-size:18px;
+font-weight:bold;
+}
+
+.airline{
+color:#777;
+}
+
+.price{
+font-size:22px;
+font-weight:bold;
+color:#0B3C8A;
+}
+
+.cupos{
+color:green;
+font-weight:bold;
+}
+
+.btn{
+background:#1A73E8;
+color:white;
+padding:10px 20px;
+border-radius:6px;
+text-decoration:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+✈️ CUPOS AÉREOS LIBERTY
+</header>
+
+<div class="search">
+
+<input type="text" id="origen" placeholder="Origen">
+<input type="text" id="destino" placeholder="Destino">
+
+<button onclick="buscar()">BUSCAR</button>
+
+</div>
+
+<div class="results" id="resultados"></div>
+
+<script>
+
+const url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv";
+
+let vuelos=[];
+
+fetch(url)
+.then(res=>res.text())
+.then(data=>{
+
+let filas=data.split("\n").slice(1);
+
+filas.forEach(f=>{
+
+let c=f.split(",");
+
+vuelos.push({
+
+origen:c[0],
+destino:c[1],
+fecha:c[2],
+aerolinea:c[3],
+salida:c[4],
+llegada:c[5],
+cupos:c[6],
+precio:c[7]
+
+});
+
+});
+
+mostrar(vuelos);
+
+});
+
+function buscar(){
+
+let origen=document.getElementById("origen").value.toLowerCase();
+let destino=document.getElementById("destino").value.toLowerCase();
+
+let filtrado=vuelos.filter(v=>
+
+(!origen || v.origen.toLowerCase().includes(origen)) &&
+(!destino || v.destino.toLowerCase().includes(destino))
+
+);
+
+mostrar(filtrado);
+
+}
+
+function mostrar(lista){
+
+let html="";
+
+lista.forEach(v=>{
+
+html+=`
+
+<div class="card">
+
+<div>
+
+<div class="route">${v.origen} → ${v.destino}</div>
+
+<div class="airline">${v.aerolinea}</div>
+
+<div>${v.salida} - ${v.llegada}</div>
+
+<div class="cupos">Cupos: ${v.cupos}</div>
+
+</div>
+
+<div>
+
+<div class="price">USD ${v.precio}</div>
+
+<br>
+
+<a class="btn" href="mailto:ventas@libertyuruguay.com.uy?subject=Cupo ${v.origen}-${v.destino}">
+Consultar
+</a>
+
+</div>
+
+</div>
+
+`;
+
+});
+
+document.getElementById("resultados").innerHTML=html;
+
+}
+
+</script>
+
+</body>
+</html>
