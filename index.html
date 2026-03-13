@@ -44,7 +44,7 @@ padding:30px;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
 gap:25px;
 }
 
@@ -53,12 +53,6 @@ background:white;
 border-radius:14px;
 overflow:hidden;
 box-shadow:0 6px 16px rgba(0,0,0,0.08);
-transition:0.25s;
-}
-
-.card:hover{
-transform:translateY(-5px);
-box-shadow:0 14px 30px rgba(0,0,0,0.15);
 }
 
 .card img{
@@ -71,35 +65,46 @@ object-fit:cover;
 padding:18px;
 }
 
-.route{
-font-size:20px;
+.title{
+font-size:22px;
 font-weight:700;
 color:#0B3C8A;
+margin-bottom:10px;
 }
 
 .airline{
-margin-top:8px;
 font-size:13px;
+margin-bottom:12px;
+}
+
+.flights{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:10px;
+}
+
+.box{
+background:#f1f3f6;
+padding:10px;
+border-radius:6px;
+font-size:13px;
+}
+
+.box b{
+color:#0B3C8A;
 }
 
 .details{
+margin-top:12px;
 font-size:13px;
-margin-top:10px;
 line-height:1.6;
-}
-
-.section{
-margin-top:8px;
-padding:8px;
-background:#f1f3f6;
-border-radius:6px;
 }
 
 .price{
 font-size:26px;
 font-weight:700;
 color:#0B3C8A;
-margin-top:12px;
+margin-top:10px;
 }
 
 .buttons{
@@ -146,6 +151,17 @@ color:white;
 
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
+const destinos={
+
+SSA:"Salvador",
+CUN:"Cancún",
+MIA:"Miami",
+GRU:"São Paulo",
+PUJ:"Punta Cana",
+MAD:"Madrid"
+
+}
+
 let promos=[]
 
 Papa.parse(csvURL,{
@@ -161,25 +177,26 @@ for(let i=0;i<rows.length;i+=2){
 let ida=rows[i]
 let vuelta=rows[i+1]
 
-if(!ida || !vuelta) continue
+if(!ida||!vuelta) continue
+
+let destinoNombre=destinos[ida[1]]||ida[1]
 
 promos.push({
 
-origen:ida[0],
-destino:ida[1],
+destino:destinoNombre,
 compania:ida[2],
 
 fecha_ida:ida[3],
 salida_ida:ida[4],
 llegada_ida:ida[5],
 
-fecha_vuelta:vuelta[3],
-salida_vuelta:vuelta[4],
-llegada_vuelta:vuelta[5],
+fecha_regreso:vuelta[3],
+salida_regreso:vuelta[4],
+llegada_regreso:vuelta[5],
 
-cupos:ida[6],
-tarifa:ida[7],
-equipaje:ida[8]
+equipaje:vuelta[8],
+cupos:vuelta[6],
+tarifa:vuelta[7]
 
 })
 
@@ -205,27 +222,31 @@ html+=`
 
 <div class="card-content">
 
-<div class="route">${p.origen} ✈ ${p.destino}</div>
+<div class="title">${p.destino}</div>
 
-<div class="airline">
-${p.compania}
-</div>
+<div class="airline">${p.compania}</div>
 
-<div class="section">
+<div class="flights">
+
+<div class="box">
 
 <b>IDA</b><br>
+
 Fecha: ${p.fecha_ida}<br>
 Salida: ${p.salida_ida}<br>
 Llegada: ${p.llegada_ida}
 
 </div>
 
-<div class="section">
+<div class="box">
 
-<b>VUELTA</b><br>
-Fecha: ${p.fecha_vuelta}<br>
-Salida: ${p.salida_vuelta}<br>
-Llegada: ${p.llegada_vuelta}
+<b>REGRESO</b><br>
+
+Fecha: ${p.fecha_regreso}<br>
+Salida: ${p.salida_regreso}<br>
+Llegada: ${p.llegada_regreso}
+
+</div>
 
 </div>
 
@@ -272,23 +293,23 @@ let cupos=prompt("¿Cuántos cupos desean reservar?")
 
 if(!cupos)return
 
-let asunto=`${p.origen} - ${p.destino}`
+let asunto=p.destino
 
 let cuerpo=`
 
 Consulta cupos aéreos
 
-Ruta: ${p.origen} - ${p.destino}
+Destino: ${p.destino}
 
 IDA
 Fecha: ${p.fecha_ida}
 Salida: ${p.salida_ida}
 Llegada: ${p.llegada_ida}
 
-VUELTA
-Fecha: ${p.fecha_vuelta}
-Salida: ${p.salida_vuelta}
-Llegada: ${p.llegada_vuelta}
+REGRESO
+Fecha: ${p.fecha_regreso}
+Salida: ${p.salida_regreso}
+Llegada: ${p.llegada_regreso}
 
 Equipaje: ${p.equipaje}
 
@@ -304,7 +325,7 @@ window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURICom
 
 function whatsapp(p){
 
-let msg=`Consulta cupos ${p.origen} - ${p.destino}`
+let msg=`Consulta cupos ${p.destino}`
 
 window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
 
