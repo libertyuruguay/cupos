@@ -131,7 +131,6 @@ color:white;
 <header>
 
 <img src="liberty.png">
-
 <h1>Cupos Aéreos Liberty</h1>
 
 </header>
@@ -149,83 +148,62 @@ const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7o
 let promos=[]
 
 Papa.parse(csvURL,{
-
 download:true,
-
 complete:function(results){
 
 let rows=results.data.slice(2)
 
-for(let i=0;i<rows.length;i+=2){
+for(let i=0;i<rows.length;i++){
 
-let impar=rows[i]
-let par=rows[i+1]
+let r=rows[i]
 
-if(!impar || !par) continue
+if(r[0]=="SI"){
 
-let escala=impar[0]
+let ida1=rows[i]
+let ida2=rows[i+1]
+let reg1=rows[i+2]
+let reg2=rows[i+3]
 
-let card={}
+if(!reg2) break
 
-if(escala=="SI"){
+promos.push({
 
-card.tipo="escala"
+destino:ida2[2],
 
-card.destino=par[2]
+ida:[ida1,ida2],
+regreso:[reg1,reg2],
 
-card.tramo1={
-origen:impar[1],
-destino:impar[2],
-compania:impar[3],
-fecha:impar[4],
-salida:impar[5],
-llegada:impar[6]
-}
+cupos:reg2[7],
+tarifa:reg2[8],
+equipaje:reg2[9]
 
-card.tramo2={
-origen:par[1],
-destino:par[2],
-compania:par[3],
-fecha:par[4],
-salida:par[5],
-llegada:par[6]
-}
+})
 
-card.cupos=par[7]
-card.tarifa=par[8]
-card.equipaje=par[9]
+i+=3
 
 }else{
 
-card.tipo="directo"
+let ida=rows[i]
+let regreso=rows[i+1]
 
-card.destino=par[2]
+if(!regreso) break
 
-card.ida={
-origen:impar[1],
-destino:impar[2],
-compania:impar[3],
-fecha:impar[4],
-salida:impar[5],
-llegada:impar[6]
-}
+promos.push({
 
-card.regreso={
-origen:par[1],
-destino:par[2],
-compania:par[3],
-fecha:par[4],
-salida:par[5],
-llegada:par[6]
-}
+destino:regreso[2],
 
-card.cupos=par[7]
-card.tarifa=par[8]
-card.equipaje=par[9]
+ida:[ida],
+regreso:[regreso],
+
+cupos:regreso[7],
+tarifa:regreso[8],
+equipaje:regreso[9]
+
+})
+
+i+=1
 
 }
-
-promos.push(card)
 
 }
 
@@ -235,64 +213,32 @@ mostrar()
 
 })
 
+function tramoHTML(t){
+
+let html=""
+
+t.forEach(v=>{
+
+html+=`
+
+${v[3]}<br>
+${v[1]} → ${v[2]}<br>
+${v[4]}<br>
+${v[5]} - ${v[6]}<br><br>
+
+`
+
+})
+
+return html
+
+}
+
 function mostrar(){
 
 let html=""
 
 promos.forEach(p=>{
-
-let idaHTML=""
-let regresoHTML=""
-
-if(p.tipo=="escala"){
-
-idaHTML=`
-
-<b>IDA</b><br>
-
-${p.tramo1.compania}<br>
-${p.tramo1.origen} → ${p.tramo1.destino}<br>
-${p.tramo1.fecha}<br>
-${p.tramo1.salida} - ${p.tramo1.llegada}
-
-<hr>
-
-ESCALA<br>
-
-${p.tramo2.compania}<br>
-${p.tramo2.origen} → ${p.tramo2.destino}<br>
-${p.tramo2.fecha}<br>
-${p.tramo2.salida} - ${p.tramo2.llegada}
-
-`
-
-regresoHTML=`<b>REGRESO</b><br>No aplica`
-
-}else{
-
-idaHTML=`
-
-<b>IDA</b><br>
-
-${p.ida.compania}<br>
-${p.ida.origen} → ${p.ida.destino}<br>
-${p.ida.fecha}<br>
-${p.ida.salida} - ${p.ida.llegada}
-
-`
-
-regresoHTML=`
-
-<b>REGRESO</b><br>
-
-${p.regreso.compania}<br>
-${p.regreso.origen} → ${p.regreso.destino}<br>
-${p.regreso.fecha}<br>
-${p.regreso.salida} - ${p.regreso.llegada}
-
-`
-
-}
 
 html+=`
 
@@ -307,11 +253,13 @@ html+=`
 <div class="flights">
 
 <div class="box">
-${idaHTML}
+<b>IDA</b><br>
+${tramoHTML(p.ida)}
 </div>
 
 <div class="box">
-${regresoHTML}
+<b>REGRESO</b><br>
+${tramoHTML(p.regreso)}
 </div>
 
 </div>
@@ -324,9 +272,7 @@ Cupos disponibles: ${p.cupos}
 </div>
 
 <div class="price">
-
 USD ${p.tarifa}
-
 </div>
 
 <div class="buttons">
@@ -335,7 +281,9 @@ USD ${p.tarifa}
 Consultar
 </button>
 
-
+<button class="btn whatsapp" onclick='whatsapp(${JSON.stringify(p)})'>
+WhatsApp
+</button>
 
 </div>
 
@@ -365,6 +313,13 @@ window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURICom
 
 }
 
+function whatsapp(p){
+
+let msg=`Consulta cupos ${p.destino}`
+
+window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
+
+}
 
 </script>
 
