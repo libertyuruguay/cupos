@@ -41,13 +41,42 @@ background:white;
 border-radius:12px;
 padding:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.1);
+transition:0.3s;
+animation:fadeUp .6s ease;
+position:relative;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 15px 35px rgba(0,0,0,0.2);
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.plane{
+position:absolute;
+top:-18px;
+left:50%;
+transform:translateX(-50%);
+width:60px;
 }
 
 .route{
 font-size:22px;
 font-weight:bold;
 color:#0b3a6f;
+margin-top:15px;
 margin-bottom:15px;
+text-align:center;
 }
 
 .flight{
@@ -68,6 +97,22 @@ font-size:24px;
 font-weight:bold;
 color:#0b3a6f;
 margin-top:10px;
+}
+
+.mailbtn{
+margin-top:12px;
+background:#0b3a6f;
+color:white;
+border:none;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+width:100%;
+font-weight:bold;
+}
+
+.mailbtn:hover{
+background:#072a52;
 }
 
 </style>
@@ -110,7 +155,11 @@ let idaInfo=`${ida[3]} ${ida[4]} ${ida[5]}-${ida[6]}`
 
 let escalaInfo=""
 
+let escalaDestino=destino
+
 if(escala=="SI"){
+
+escalaDestino=ida[8]
 
 escalaInfo=`
 <br><b>Escala</b><br>
@@ -125,17 +174,36 @@ let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,destino,idaInfo,escalaInfo,regresoInfo,cupos,precio,equipaje)
+crearCard(origen,destino,escalaDestino,idaInfo,escalaInfo,regresoInfo,cupos,precio,equipaje)
 
 }
 
 })
 
-function crearCard(origen,destino,ida,escala,regreso,cupos,precio,equipaje){
+function crearCard(origen,destino,escalaDestino,ida,escala,regreso,cupos,precio,equipaje){
+
+let asunto=`${origen} - ${escalaDestino}`
+
+let cuerpo=`Ruta: ${origen} - ${escalaDestino}
+
+IDA
+${ida}
+
+${escala}
+
+REGRESO
+${regreso}
+
+Equipaje: ${equipaje}
+Tarifa: USD ${precio}
+Cupos disponibles: ${cupos}
+`
 
 let card=`
 
 <div class="card">
+
+<img class="plane" src="avion-cupos.png">
 
 <div class="route">${origen} ✈ ${destino}</div>
 
@@ -155,10 +223,31 @@ ${regreso}
 
 <div class="price">USD ${precio}</div>
 
+<button class="mailbtn" onclick="consultar('${asunto}','${cuerpo}')">
+Consultar por Mail
+</button>
+
 </div>
 `
 
 document.getElementById("cards").innerHTML+=card
+
+}
+
+function consultar(asunto,cuerpo){
+
+let cantidad=prompt("¿Cuántos cupos deseas reservar?")
+
+if(!cantidad) return
+
+let mensaje=cuerpo + `
+
+Cupos solicitados: ${cantidad}
+`
+
+let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
+
+window.location.href=mail
 
 }
 
