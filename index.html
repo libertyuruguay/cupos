@@ -5,10 +5,12 @@
 <meta charset="UTF-8">
 <title>Cupos Liberty</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
 <style>
 
 body{
-font-family:Arial;
+font-family:'Inter',sans-serif;
 background:#f4f6fb;
 margin:0;
 }
@@ -25,7 +27,7 @@ justify-content:center;
 gap:15px;
 color:white;
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 }
 
 header img{
@@ -48,14 +50,13 @@ gap:25px;
 background:white;
 border-radius:12px;
 padding:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.1);
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 transition:0.3s;
-overflow:hidden;
 }
 
 .card:hover{
 transform:translateY(-6px);
-box-shadow:0 15px 35px rgba(0,0,0,0.2);
+box-shadow:0 18px 35px rgba(0,0,0,0.15);
 }
 
 .plane{
@@ -68,7 +69,7 @@ margin-bottom:15px;
 
 .route{
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 color:#0b3a6f;
 text-align:center;
 margin-bottom:15px;
@@ -82,15 +83,16 @@ margin-bottom:10px;
 }
 
 .flighttitle{
-font-weight:bold;
+font-weight:600;
 margin-bottom:6px;
+color:#0b3a6f;
 }
 
 .flightline{
-font-family:monospace;
-font-size:13px;
+font-size:14px;
+letter-spacing:0.2px;
+line-height:1.6;
 color:#333;
-line-height:1.7;
 }
 
 .info{
@@ -100,7 +102,7 @@ font-size:14px;
 
 .price{
 font-size:22px;
-font-weight:bold;
+font-weight:600;
 color:#0b3a6f;
 margin-top:10px;
 }
@@ -114,7 +116,7 @@ padding:10px;
 border-radius:6px;
 cursor:pointer;
 width:100%;
-font-weight:bold;
+font-weight:600;
 }
 
 .mailbtn:hover{
@@ -157,7 +159,7 @@ if(!regreso) break
 let origen=ida[1]
 let destino=ida[2]
 
-let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]} - ${ida[6]}`
+let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
 let idaEscala=""
 let escalaDestino=destino
@@ -166,17 +168,17 @@ if(ida[0]=="SI"){
 
 escalaDestino=ida[8]
 
-idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} | ${ida[11]} - ${ida[12]}`
+idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} | ${ida[11]}-${ida[12]}`
 
 }
 
-let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} | ${regreso[5]} - ${regreso[6]}`
+let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} | ${regreso[5]}-${regreso[6]}`
 
 let regresoEscala=""
 
 if(regreso[0]=="SI"){
 
-regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} | ${regreso[11]} - ${regreso[12]}`
+regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} | ${regreso[11]}-${regreso[12]}`
 
 }
 
@@ -224,7 +226,7 @@ ${idaEscala ? `<div class="flightline">${idaEscala}</div>`:""}
 </div>
 
 <div class="flight">
-<div class="flighttitle">🛬 REGRESO</div>
+<div class="flighttitle">✈ REGRESO</div>
 <div class="flightline">${regreso}</div>
 ${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 </div>
