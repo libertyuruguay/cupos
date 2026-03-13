@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
 <title>Cupos Aéreos Liberty</title>
 
@@ -30,51 +32,42 @@ padding:30px;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
 gap:25px;
 }
 
 .card{
 background:white;
 border-radius:12px;
-overflow:hidden;
+padding:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.card-body{
-padding:18px;
 }
 
 .route{
 font-size:22px;
 font-weight:bold;
 color:#0b3a6f;
-margin-bottom:12px;
+margin-bottom:15px;
 }
 
-.boxes{
-display:flex;
-gap:10px;
-}
-
-.box{
-flex:1;
+.flight{
 background:#f1f4f9;
 padding:12px;
 border-radius:8px;
-font-size:13px;
+margin-bottom:10px;
+font-size:14px;
 }
 
 .info{
-margin-top:10px;
+margin-top:8px;
 font-size:14px;
 }
 
 .price{
-font-size:22px;
-color:#0b3a6f;
+font-size:24px;
 font-weight:bold;
-margin-top:8px;
+color:#0b3a6f;
+margin-top:10px;
 }
 
 .buttons{
@@ -97,6 +90,7 @@ font-weight:bold;
 .wa{background:#25D366;}
 
 </style>
+
 </head>
 
 <body>
@@ -117,83 +111,41 @@ fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
 
-let rows=data.split("\n")
-.slice(2)
-.map(r=>r.split(","))
-.filter(r => r[1] && r[1].trim() !== "") // elimina filas vacías
+let rows=data.split("\n").slice(1).map(r=>r.split(","))
 
-let container=document.getElementById("cards")
+rows.forEach(row=>{
 
-for(let i=0;i<rows.length;){
+let origen=row[1]
+let destino=row[2]
 
-let escala=(rows[i][0]||"").trim().toUpperCase()
+let compania=row[3]
+let fecha=row[4]
+let salida=row[5]
+let llegada=row[6]
 
-// SI TIENE ESCALA
-if(escala==="SI" && rows[i+3]){
+let escalaOrigen=row[7]
+let escalaDestino=row[8]
 
-let ida1=rows[i]
-let ida2=rows[i+1]
+let companiaReg=row[9]
+let fechaReg=row[10]
+let salidaReg=row[11]
+let llegadaReg=row[12]
 
-let reg1=rows[i+2]
-let reg2=rows[i+3]
+let cupos=row[13]
+let precio=row[14]
+let equipaje=row[15]
 
-let origen=ida1[1]
-let destino=ida2[2]
+let ida=`${compania} ${fecha} ${salida} - ${llegada}`
 
-let ida=`
-${ida1[3]} ${ida1[4]} ${ida1[5]}-${ida1[6]}<br>
-Escala ${ida2[1]}<br>
-${ida2[3]} ${ida2[4]} ${ida2[5]}-${ida2[6]}
-`
+if(escalaOrigen && escalaDestino){
+ida+=`<br>Escala ${escalaOrigen} → ${escalaDestino}`
+}
 
-let regreso=`
-${reg1[3]} ${reg1[4]} ${reg1[5]}-${reg1[6]}<br>
-Escala ${reg2[1]}<br>
-${reg2[3]} ${reg2[4]} ${reg2[5]}-${reg2[6]}
-`
-
-let cupos=reg2[7]
-let precio=reg2[8]
-let equipaje=reg2[9]
+let regreso=`${companiaReg} ${fechaReg} ${salidaReg} - ${llegadaReg}`
 
 crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
 
-i+=4
-
-}
-
-// SIN ESCALA
-else if(rows[i+1]){
-
-let idaRow=rows[i]
-let regRow=rows[i+1]
-
-let origen=idaRow[1]
-let destino=idaRow[2]
-
-let ida=`
-${idaRow[3]} ${idaRow[4]} ${idaRow[5]}-${idaRow[6]}
-`
-
-let regreso=`
-${regRow[3]} ${regRow[4]} ${regRow[5]}-${regRow[6]}
-`
-
-let cupos=regRow[7]
-let precio=regRow[8]
-let equipaje=regRow[9]
-
-crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
-
-i+=2
-
-}else{
-
-i++
-
-}
-
-}
+})
 
 })
 
@@ -209,22 +161,16 @@ let card=`
 
 <div class="card">
 
-<div class="card-body">
-
 <div class="route">${origen} ✈ ${destino}</div>
 
-<div class="boxes">
-
-<div class="box">
+<div class="flight">
 <b>IDA</b><br>
 ${ida}
 </div>
 
-<div class="box">
+<div class="flight">
 <b>REGRESO</b><br>
 ${regreso}
-</div>
-
 </div>
 
 <div class="info">Equipaje: ${equipaje}</div>
@@ -245,8 +191,6 @@ WhatsApp
 </div>
 
 </div>
-
-</div>
 `
 
 document.getElementById("cards").innerHTML+=card
@@ -256,4 +200,5 @@ document.getElementById("cards").innerHTML+=card
 </script>
 
 </body>
+
 </html>
