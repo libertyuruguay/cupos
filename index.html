@@ -6,267 +6,254 @@
 <title>Cupos Liberty</title>
 
 <style>
+
 body{
-    font-family:Arial;
-    background:#f4f6fb;
-    margin:0;
+font-family:Arial;
+background:#f4f6fb;
+margin:0;
 }
 
 header{
-    background:#0b3a6f;
-    padding:15px;
-    text-align:center;
+background:#0b3a6f;
+padding:15px;
+}
+
+.headerbox{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+color:white;
+font-size:22px;
+font-weight:bold;
 }
 
 header img{
-    height:55px;
+height:50px;
 }
 
 .container{
-    max-width:1200px;
-    margin:auto;
-    padding:30px;
+max-width:1200px;
+margin:auto;
+padding:30px;
 }
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-    gap:25px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+gap:25px;
 }
 
 .card{
-    background:white;
-    border-radius:12px;
-    padding:20px;
-    box-shadow:0 10px 25px rgba(0,0,0,0.1);
-    transition:0.3s;
-    animation:fadeUp .6s ease;
-    position:relative;
-    overflow:hidden;
+background:white;
+border-radius:12px;
+padding:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
+transition:0.3s;
+overflow:hidden;
 }
 
 .card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 15px 35px rgba(0,0,0,0.2);
-}
-
-@keyframes fadeUp{
-    from{
-        opacity:0;
-        transform:translateY(20px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
+transform:translateY(-6px);
+box-shadow:0 15px 35px rgba(0,0,0,0.2);
 }
 
 .plane{
-    width:100%;
-    height:80px;
-    object-fit:cover;
-    border-top-left-radius:12px;
-    border-top-right-radius:12px;
-    margin-bottom:15px;
+width:100%;
+height:90px;
+object-fit:cover;
+border-radius:10px;
+margin-bottom:15px;
 }
 
 .route{
-    font-size:22px;
-    font-weight:bold;
-    color:#0b3a6f;
-    margin-top:0;
-    margin-bottom:15px;
-    text-align:center;
+font-size:22px;
+font-weight:bold;
+color:#0b3a6f;
+text-align:center;
+margin-bottom:15px;
 }
 
-/* Contenedor flex para ida y regreso */
-.flights-container{
-    display:flex;
-    gap:15px;
-    flex-wrap:wrap;
+.flight{
+background:#f1f4f9;
+padding:10px;
+border-radius:8px;
+margin-bottom:8px;
+font-size:13px;
 }
 
-.flight-column{
-    flex:1;
-    min-width:140px;
-}
-
-/* Escala debajo de cada vuelo */
-.flight, .scale{
-    background:#f1f4f9;
-    padding:10px;
-    border-radius:8px;
-    margin-bottom:10px;
-    font-size:14px;
+.scale{
+font-size:12px;
+color:#555;
+margin-bottom:10px;
+padding-left:8px;
 }
 
 .info{
-    margin-top:6px;
-    font-size:14px;
+margin-top:6px;
+font-size:14px;
 }
 
 .price{
-    font-size:24px;
-    font-weight:bold;
-    color:#0b3a6f;
-    margin-top:10px;
+font-size:22px;
+font-weight:bold;
+color:#0b3a6f;
+margin-top:10px;
 }
 
 .mailbtn{
-    margin-top:12px;
-    background:#0b3a6f;
-    color:white;
-    border:none;
-    padding:10px;
-    border-radius:6px;
-    cursor:pointer;
-    width:100%;
-    font-weight:bold;
+margin-top:12px;
+background:#0b3a6f;
+color:white;
+border:none;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+width:100%;
+font-weight:bold;
 }
 
 .mailbtn:hover{
-    background:#072a52;
+background:#072a52;
 }
+
 </style>
 </head>
 
 <body>
 
 <header>
-    <div style="display:flex; align-items:center; justify-content:center; gap:15px;">
-        <img src="liberty.png" alt="Liberty">
-        <span style="color:white; font-size:22px; font-weight:bold;">Cupos Aéreos Disponibles</span>
-    </div>
+<div class="headerbox">
+<img src="liberty.png">
+<span>Cupos Aéreos Disponibles</span>
+</div>
 </header>
 
 <div class="container">
-    <div class="grid" id="cards"></div>
+<div class="grid" id="cards"></div>
 </div>
 
 <script>
+
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
 fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
-    let rows=data.split("\n").slice(2).map(r=>r.split(","))
 
-    for(let i=0;i<rows.length;i+=2){
-        let ida=rows[i]
-        let regreso=rows[i+1]
-        if(!regreso) break
+let rows=data.split("\n").slice(2).map(r=>r.split(","))
 
-        let escala=ida[0]
+for(let i=0;i<rows.length;i+=2){
 
-        let origen=ida[1]
-        let destino=ida[2]
+let ida=rows[i]
+let regreso=rows[i+1]
 
-        // IDA
-        let idaCompania=ida[3]
-        let idaFecha=ida[4]
-        let idaHoraSalida=ida[5]
-        let idaHoraLlegada=ida[6]
+if(!regreso) break
 
-        // Escala IDA
-        let escalaOrigen="", escalaCompania="", escalaFecha="", escalaHoraSalida="", escalaHoraLlegada=""
-        if(escala=="SI"){
-            escalaOrigen=ida[7]
-            escalaDestino=ida[8]
-            escalaCompania=ida[9]
-            escalaFecha=ida[10]
-            escalaHoraSalida=ida[11]
-            escalaHoraLlegada=ida[12]
-        } else {
-            escalaDestino=destino
-        }
+let origen=ida[1]
+let destino=ida[2]
 
-        // REGRESO
-        let regresoOrigen=regreso[1]
-        let regresoDestino=regreso[2]
-        let regresoCompania=regreso[3]
-        let regresoFecha=regreso[4]
-        let regresoHoraSalida=regreso[5]
-        let regresoHoraLlegada=regreso[6]
+let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} ${ida[5]}-${ida[6]}`
 
-        // Escala REGRESO
-        let regresoEscala="", regresoEscalaOrigen="", regresoEscalaDestino="", regresoEscalaCompania="", regresoEscalaFecha="", regresoEscalaHoraSalida="", regresoEscalaHoraLlegada=""
-        if(regreso[0]=="SI"){
-            regresoEscala="Escala"
-            regresoEscalaOrigen=regreso[7]
-            regresoEscalaDestino=regreso[8]
-            regresoEscalaCompania=regreso[9]
-            regresoEscalaFecha=regreso[10]
-            regresoEscalaHoraSalida=regreso[11]
-            regresoEscalaHoraLlegada=regreso[12]
-        }
+let idaEscala=""
+let escalaDestino=destino
 
-        let cupos=ida[13]
-        let precio=ida[14]
-        let equipaje=ida[15]
+if(ida[0]=="SI"){
 
-        crearCard(origen, destino, escalaDestino,
-                   idaCompania, idaFecha, idaHoraSalida, idaHoraLlegada,
-                   escalaOrigen, escalaCompania, escalaFecha, escalaHoraSalida, escalaHoraLlegada,
-                   regresoOrigen, regresoDestino, regresoCompania, regresoFecha, regresoHoraSalida, regresoHoraLlegada,
-                   regresoEscala, regresoEscalaOrigen, regresoEscalaDestino, regresoEscalaCompania, regresoEscalaFecha, regresoEscalaHoraSalida, regresoEscalaHoraLlegada,
-                   cupos, precio, equipaje)
-    }
+escalaDestino=ida[8]
+
+idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} ${ida[11]}-${ida[12]}`
+
+}
+
+let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} ${regreso[5]}-${regreso[6]}`
+
+let regresoEscala=""
+
+if(regreso[0]=="SI"){
+
+regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} ${regreso[11]}-${regreso[12]}`
+
+}
+
+let cupos=ida[13]
+let precio=ida[14]
+let equipaje=ida[15]
+
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
+
+}
+
 })
 
-function crearCard(origen, destino, escalaDestino,
-                    idaCompania, idaFecha, idaHoraSalida, idaHoraLlegada,
-                    escalaOrigen, escalaCompania, escalaFecha, escalaHoraSalida, escalaHoraLlegada,
-                    regresoOrigen, regresoDestino, regresoCompania, regresoFecha, regresoHoraSalida, regresoHoraLlegada,
-                    regresoEscala, regresoEscalaOrigen, regresoEscalaDestino, regresoEscalaCompania, regresoEscalaFecha, regresoEscalaHoraSalida, regresoEscalaHoraLlegada,
-                    cupos, precio, equipaje){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
 
-    let asunto=`${origen} - ${escalaDestino}`
-    let cuerpo=`Ruta: ${origen} - ${escalaDestino}
+let asunto=`${origen} - ${destino}`
+
+let cuerpo=`Ruta: ${origen} - ${destino}
 
 IDA
-${origen} → ${destino} | ${idaCompania} | ${idaFecha} ${idaHoraSalida}-${idaHoraLlegada}
-
-${escalaOrigen ? `Escala\n${escalaOrigen} → ${escalaDestino} | ${escalaCompania} | ${escalaFecha} ${escalaHoraSalida}-${escalaHoraLlegada}\n` : ''}
+${ida}
+${idaEscala}
 
 REGRESO
-${regresoOrigen} → ${regresoDestino} | ${regresoCompania} | ${regresoFecha} ${regresoHoraSalida}-${regresoHoraLlegada}
-
-${regresoEscala ? `Escala\n${regresoEscalaOrigen} → ${regresoEscalaDestino} | ${regresoEscalaCompania} | ${regresoEscalaFecha} ${regresoEscalaHoraSalida}-${regresoEscalaHoraLlegada}` : ''}
+${regreso}
+${regresoEscala}
 
 Equipaje: ${equipaje}
 Tarifa: USD ${precio}
-Cupos disponibles: ${cupos}`
+Cupos disponibles: ${cupos}
+`
 
-    let card=`
-    <div class="card">
-        <img class="plane" src="avion-cupos.png">
-        <div class="route">${origen} - ${escalaDestino}</div>
-        <div class="flights-container">
-            <div class="flight-column">
-                <div class="flight"><b>IDA</b><br>${origen} → ${destino} | ${idaCompania} | ${idaFecha} ${idaHoraSalida}-${idaHoraLlegada}</div>
-                ${escalaOrigen ? `<div class="scale"><b>Escala</b><br>${escalaOrigen} → ${escalaDestino} | ${escalaCompania} | ${escalaFecha} ${escalaHoraSalida}-${escalaHoraLlegada}</div>` : ''}
-            </div>
-            <div class="flight-column">
-                <div class="flight"><b>REGRESO</b><br>${regresoOrigen} → ${regresoDestino} | ${regresoCompania} | ${regresoFecha} ${regresoHoraSalida}-${regresoHoraLlegada}</div>
-                ${regresoEscala ? `<div class="scale"><b>Escala</b><br>${regresoEscalaOrigen} → ${regresoEscalaDestino} | ${regresoEscalaCompania} | ${regresoEscalaFecha} ${regresoEscalaHoraSalida}-${regresoEscalaHoraLlegada}</div>` : ''}
-            </div>
-        </div>
-        <div class="info">Equipaje: ${equipaje}</div>
-        <div class="info">Cupos disponibles: ${cupos}</div>
-        <div class="price">USD ${precio}</div>
-        <button class="mailbtn" onclick="consultar('${asunto}', \`${cuerpo}\`)">Consultar por Mail</button>
-    </div>
-    `
-    document.getElementById("cards").innerHTML += card
+let card=`
+
+<div class="card">
+
+<img class="plane" src="avion-cupos.png">
+
+<div class="route">${origen} - ${destino}</div>
+
+<div class="flight"><b>IDA</b><br>${ida}</div>
+
+${idaEscala ? `<div class="scale">${idaEscala}</div>`:""}
+
+<div class="flight"><b>REGRESO</b><br>${regreso}</div>
+
+${regresoEscala ? `<div class="scale">${regresoEscala}</div>`:""}
+
+<div class="info">Equipaje: ${equipaje}</div>
+<div class="info">Cupos disponibles: ${cupos}</div>
+
+<div class="price">USD ${precio}</div>
+
+<button class="mailbtn" onclick="consultar('${asunto}',\`${cuerpo}\`)">
+Consultar por Mail
+</button>
+
+</div>
+`
+
+document.getElementById("cards").innerHTML+=card
+
 }
 
-function consultar(asunto, cuerpo){
-    let cantidad=prompt("¿Cuántos cupos deseas reservar?")
-    if(!cantidad) return
-    let mensaje=cuerpo + `\n\nCupos solicitados: ${cantidad}`
-    let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
-    window.location.href=mail
+function consultar(asunto,cuerpo){
+
+let cantidad=prompt("¿Cuántos cupos deseas reservar?")
+
+if(!cantidad) return
+
+let mensaje=cuerpo + `
+
+Cupos solicitados: ${cantidad}
+`
+
+let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
+
+window.location.href=mail
+
 }
+
 </script>
 
 </body>
