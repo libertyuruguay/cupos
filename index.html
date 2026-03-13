@@ -8,7 +8,7 @@
 
 body{
 font-family:Arial;
-background:#f4f6fb;
+background:#f2f4f8;
 margin:0;
 }
 
@@ -36,9 +36,9 @@ gap:25px;
 
 .card{
 background:white;
-border-radius:14px;
+border-radius:12px;
 overflow:hidden;
-box-shadow:0 6px 18px rgba(0,0,0,0.08);
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
 }
 
 .card img{
@@ -55,39 +55,38 @@ padding:18px;
 font-size:22px;
 font-weight:bold;
 color:#0b3a6f;
-margin-bottom:10px;
+margin-bottom:12px;
 }
 
 .boxes{
 display:flex;
 gap:10px;
-margin-bottom:12px;
 }
 
 .box{
 flex:1;
 background:#f1f4f9;
-padding:10px;
+padding:12px;
 border-radius:8px;
 font-size:13px;
 }
 
 .info{
+margin-top:10px;
 font-size:14px;
-margin-top:8px;
 }
 
 .price{
 font-size:22px;
 color:#0b3a6f;
 font-weight:bold;
-margin-top:10px;
+margin-top:8px;
 }
 
 .buttons{
 display:flex;
 gap:10px;
-margin-top:12px;
+margin-top:14px;
 }
 
 .btn{
@@ -113,28 +112,26 @@ font-weight:bold;
 </header>
 
 <div class="container">
-
 <div class="grid" id="cards"></div>
-
 </div>
 
 <script>
 
-const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-fetch(CSV)
+fetch(csvURL)
 .then(r=>r.text())
-.then(text=>{
+.then(data=>{
 
-let rows=text.split("\n").slice(2).map(r=>r.split(","))
+let rows=data.split("\n").slice(2).map(r=>r.split(","))
 
 let container=document.getElementById("cards")
 
 for(let i=0;i<rows.length;){
 
-let escala=rows[i][0]
+let escala=(rows[i][0]||"").trim().toUpperCase()
 
-if(escala=="SI"){
+if(escala==="SI" && rows[i+3]){
 
 let r1=rows[i]
 let r2=rows[i+1]
@@ -144,36 +141,29 @@ let r4=rows[i+3]
 let origen=r1[1]
 let destino=r2[2]
 
-let html=createCard(
-
-origen,
-destino,
-
-`
+let ida=`
 ${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}<br>
 Escala ${r2[1]}<br>
 ${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}
-`,
-
 `
+
+let regreso=`
 ${r3[3]} ${r3[4]} ${r3[5]}-${r3[6]}<br>
 Escala ${r4[1]}<br>
 ${r4[3]} ${r4[4]} ${r4[5]}-${r4[6]}
-`,
+`
 
-r4[9],
-r4[7],
-r4[8]
+let cupos=r4[7]
+let tarifa=r4[8]
+let equipaje=r4[9]
 
-)
-
-container.innerHTML+=html
+container.innerHTML+=crearCard(origen,destino,ida,regreso,cupos,tarifa,equipaje)
 
 i+=4
 
 }
 
-else{
+else if(rows[i+1]){
 
 let r1=rows[i]
 let r2=rows[i+1]
@@ -181,37 +171,33 @@ let r2=rows[i+1]
 let origen=r1[1]
 let destino=r1[2]
 
-let html=createCard(
+let ida=`${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}`
 
-origen,
-destino,
+let regreso=`${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}`
 
-`${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}`,
+let cupos=r2[7]
+let tarifa=r2[8]
+let equipaje=r2[9]
 
-`${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}`,
-
-r2[9],
-r2[7],
-r2[8]
-
-)
-
-container.innerHTML+=html
+container.innerHTML+=crearCard(origen,destino,ida,regreso,cupos,tarifa,equipaje)
 
 i+=2
 
+}
+
+else{
+i++
 }
 
 }
 
 })
 
-function createCard(origen,destino,ida,regreso,equipaje,cupos,precio){
+function crearCard(origen,destino,ida,regreso,cupos,precio,equipaje){
 
 let asunto=`Consulta cupos ${origen} ${destino}`
 
-let body=`
-Ruta: ${origen} ${destino}
+let cuerpo=`Ruta: ${origen} ${destino}
 
 IDA
 ${ida}
@@ -225,10 +211,10 @@ Precio: ${precio}
 
 Cupos disponibles: ${cupos}
 
-Cantidad de cupos solicitados:
+Cantidad de cupos que deseo reservar:
 `
 
-let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`
+let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
 let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
 
@@ -257,13 +243,20 @@ ${regreso}
 </div>
 
 <div class="info">Equipaje: ${equipaje}</div>
-<div class="info">Cupos: ${cupos}</div>
+<div class="info">Cupos disponibles: ${cupos}</div>
 
 <div class="price">${precio}</div>
 
 <div class="buttons">
-<button class="btn mail" onclick="window.location.href='${mail}'">Consultar Mail</button>
-<button class="btn wa" onclick="window.open('${wa}')">WhatsApp</button>
+
+<button class="btn mail" onclick="window.location.href='${mail}'">
+Consultar por Mail
+</button>
+
+<button class="btn wa" onclick="window.open('${wa}')">
+WhatsApp
+</button>
+
 </div>
 
 </div>
