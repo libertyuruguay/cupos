@@ -42,21 +42,9 @@ margin:auto;
 padding:30px;
 }
 
-.search{
-margin-bottom:25px;
-}
-
-.search input{
-width:100%;
-padding:12px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:15px;
-}
-
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:25px;
 }
 
@@ -91,20 +79,20 @@ color:#0B3C8A;
 
 .airline{
 margin-top:8px;
-display:flex;
-align-items:center;
-gap:6px;
 font-size:13px;
-}
-
-.airlogo{
-height:16px;
 }
 
 .details{
 font-size:13px;
 margin-top:10px;
 line-height:1.6;
+}
+
+.section{
+margin-top:8px;
+padding:8px;
+background:#f1f3f6;
+border-radius:6px;
 }
 
 .price{
@@ -131,13 +119,8 @@ cursor:pointer;
 color:white;
 }
 
-.mail{
-background:#1a73e8;
-}
-
-.whatsapp{
-background:#25D366;
-}
+.mail{background:#1a73e8;}
+.whatsapp{background:#25D366;}
 
 </style>
 
@@ -155,10 +138,6 @@ background:#25D366;
 
 <div class="container">
 
-<div class="search">
-<input id="buscador" placeholder="Buscar destino..." onkeyup="buscar()">
-</div>
-
 <div class="grid" id="resultados"></div>
 
 </div>
@@ -166,12 +145,6 @@ background:#25D366;
 <script>
 
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
-
-const logos={
-"LA":"https://upload.wikimedia.org/wikipedia/commons/8/8b/LATAM_Airlines_logo.svg",
-"G3":"https://upload.wikimedia.org/wikipedia/commons/6/6d/GOL_Linhas_A%C3%A9reas_logo.svg",
-"AD":"https://upload.wikimedia.org/wikipedia/commons/f/f4/Azul_Brazilian_Airlines_logo.svg"
-}
 
 let promos=[]
 
@@ -183,39 +156,46 @@ complete:function(results){
 
 let rows=results.data.slice(2)
 
-rows.forEach(c=>{
+for(let i=0;i<rows.length;i+=2){
 
-if(!c[0]) return
+let ida=rows[i]
+let vuelta=rows[i+1]
+
+if(!ida || !vuelta) continue
 
 promos.push({
 
-origen:c[0],
-destino:c[1],
-compania:c[2],
-fecha:c[3],
-salida:c[4],
-llegada:c[5],
-cupos:c[6],
-tarifa:c[7],
-equipaje:c[8]
+origen:ida[0],
+destino:ida[1],
+compania:ida[2],
+
+fecha_ida:ida[3],
+salida_ida:ida[4],
+llegada_ida:ida[5],
+
+fecha_vuelta:vuelta[3],
+salida_vuelta:vuelta[4],
+llegada_vuelta:vuelta[5],
+
+cupos:ida[6],
+tarifa:ida[7],
+equipaje:ida[8]
 
 })
 
-})
+}
 
-mostrar(promos)
+mostrar()
 
 }
 
 })
 
-function mostrar(data){
+function mostrar(){
 
 let html=""
 
-data.forEach(p=>{
-
-let logo=logos[p.compania]||""
+promos.forEach(p=>{
 
 html+=`
 
@@ -228,18 +208,29 @@ html+=`
 <div class="route">${p.origen} ✈ ${p.destino}</div>
 
 <div class="airline">
-
-${logo?`<img class="airlogo" src="${logo}">`:``}
-
 ${p.compania}
+</div>
+
+<div class="section">
+
+<b>IDA</b><br>
+Fecha: ${p.fecha_ida}<br>
+Salida: ${p.salida_ida}<br>
+Llegada: ${p.llegada_ida}
+
+</div>
+
+<div class="section">
+
+<b>VUELTA</b><br>
+Fecha: ${p.fecha_vuelta}<br>
+Salida: ${p.salida_vuelta}<br>
+Llegada: ${p.llegada_vuelta}
 
 </div>
 
 <div class="details">
 
-Fecha: ${p.fecha}<br>
-Salida: ${p.salida}<br>
-Llegada: ${p.llegada}<br>
 Equipaje: ${p.equipaje}<br>
 Cupos disponibles: ${p.cupos}
 
@@ -275,21 +266,6 @@ document.getElementById("resultados").innerHTML=html
 
 }
 
-function buscar(){
-
-let q=document.getElementById("buscador").value.toLowerCase()
-
-let f=promos.filter(p=>
-
-p.destino.toLowerCase().includes(q) ||
-p.origen.toLowerCase().includes(q)
-
-)
-
-mostrar(f)
-
-}
-
 function mail(p){
 
 let cupos=prompt("¿Cuántos cupos desean reservar?")
@@ -300,16 +276,19 @@ let asunto=`${p.origen} - ${p.destino}`
 
 let cuerpo=`
 
-Consulta de cupos aéreos
+Consulta cupos aéreos
 
 Ruta: ${p.origen} - ${p.destino}
 
-Fecha: ${p.fecha}
+IDA
+Fecha: ${p.fecha_ida}
+Salida: ${p.salida_ida}
+Llegada: ${p.llegada_ida}
 
-Salida: ${p.salida}
-Llegada: ${p.llegada}
-
-Compañía: ${p.compania}
+VUELTA
+Fecha: ${p.fecha_vuelta}
+Salida: ${p.salida_vuelta}
+Llegada: ${p.llegada_vuelta}
 
 Equipaje: ${p.equipaje}
 
@@ -325,7 +304,7 @@ window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURICom
 
 function whatsapp(p){
 
-let msg=`Consulta cupos ${p.origen} - ${p.destino} ${p.fecha}`
+let msg=`Consulta cupos ${p.origen} - ${p.destino}`
 
 window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
 
