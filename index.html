@@ -14,23 +14,36 @@ margin:0;
 
 header{
 background:#0b3a6f;
-padding:20px;
+padding:18px;
 text-align:center;
 }
 
 header img{
-height:60px;
+height:55px;
+}
+
+.search{
+text-align:center;
+padding:25px;
+}
+
+.search input{
+width:320px;
+padding:12px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:16px;
 }
 
 .container{
-max-width:1300px;
+max-width:1400px;
 margin:auto;
-padding:30px;
+padding:10px 30px 40px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:25px;
 }
 
@@ -38,7 +51,13 @@ gap:25px;
 background:white;
 border-radius:12px;
 overflow:hidden;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 8px 25px rgba(0,0,0,0.08);
+transition:all .25s;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 15px 40px rgba(0,0,0,0.15);
 }
 
 .card img{
@@ -55,15 +74,15 @@ padding:18px;
 font-size:22px;
 font-weight:bold;
 color:#0b3a6f;
-margin-bottom:12px;
+margin-bottom:14px;
 }
 
-.boxes{
+.flight-boxes{
 display:flex;
-gap:10px;
+gap:12px;
 }
 
-.box{
+.flight{
 flex:1;
 background:#f1f4f9;
 padding:12px;
@@ -71,16 +90,22 @@ border-radius:8px;
 font-size:13px;
 }
 
+.flight-title{
+font-weight:bold;
+margin-bottom:6px;
+color:#0b3a6f;
+}
+
 .info{
-margin-top:10px;
+margin-top:12px;
 font-size:14px;
 }
 
 .price{
-font-size:22px;
+font-size:24px;
 color:#0b3a6f;
 font-weight:bold;
-margin-top:8px;
+margin-top:10px;
 }
 
 .buttons{
@@ -102,6 +127,15 @@ font-weight:bold;
 .mail{background:#0b3a6f;}
 .wa{background:#25D366;}
 
+.fade{
+animation:fadein .6s;
+}
+
+@keyframes fadein{
+from{opacity:0; transform:translateY(10px);}
+to{opacity:1; transform:translateY(0);}
+}
+
 </style>
 </head>
 
@@ -111,11 +145,27 @@ font-weight:bold;
 <img src="liberty.png">
 </header>
 
+<div class="search">
+<input id="buscar" placeholder="Buscar destino..." onkeyup="filtrar()">
+</div>
+
 <div class="container">
 <div class="grid" id="cards"></div>
 </div>
 
 <script>
+
+const destinos={
+GRU:"São Paulo",
+GIG:"Rio de Janeiro",
+MIA:"Miami",
+MAD:"Madrid",
+BCN:"Barcelona",
+LIM:"Lima",
+BOG:"Bogotá",
+SCL:"Santiago",
+EZE:"Buenos Aires"
+}
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
@@ -129,7 +179,7 @@ let container=document.getElementById("cards")
 
 for(let i=0;i<rows.length;){
 
-let escala=(rows[i][0]||"").replace(/"/g,"").trim().toUpperCase()
+let escala=(rows[i][0]||"").trim().toUpperCase()
 
 if(escala==="SI"){
 
@@ -141,23 +191,21 @@ let r4=rows[i+3]
 let origen=r1[1]
 let destino=r2[2]
 
+let destinoNombre=destinos[destino] || destino
+
 let ida=`
 ${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}<br>
-Escala en ${r2[1]}<br>
+Escala ${r2[1]}<br>
 ${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}
 `
 
 let regreso=`
 ${r3[3]} ${r3[4]} ${r3[5]}-${r3[6]}<br>
-Escala en ${r4[1]}<br>
+Escala ${r4[1]}<br>
 ${r4[3]} ${r4[4]} ${r4[5]}-${r4[6]}
 `
 
-let cupos=r4[7]
-let precio=r4[8]
-let equipaje=r4[9]
-
-crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
+crearCard(origen,destinoNombre,ida,regreso,r4[7],r4[8],r4[9])
 
 i+=4
 
@@ -171,21 +219,21 @@ let r2=rows[i+1]
 let origen=r1[1]
 let destino=r2[2]
 
+let destinoNombre=destinos[destino] || destino
+
 let ida=`${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}`
 
 let regreso=`${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}`
 
-let cupos=r2[7]
-let precio=r2[8]
-let equipaje=r2[9]
-
-crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
+crearCard(origen,destinoNombre,ida,regreso,r2[7],r2[8],r2[9])
 
 i+=2
 
 }
 
 }
+
+})
 
 function crearCard(origen,destino,ida,regreso,cupos,precio,equipaje){
 
@@ -200,12 +248,10 @@ REGRESO
 ${regreso}
 
 Equipaje: ${equipaje}
-
 Precio: ${precio}
+Cupos: ${cupos}
 
-Cupos disponibles: ${cupos}
-
-Cantidad de cupos solicitados:
+Cantidad de cupos que deseo reservar:
 `
 
 let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
@@ -214,7 +260,7 @@ let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
 
 let card=`
 
-<div class="card">
+<div class="card fade" data-destino="${destino}">
 
 <img src="avion-cupos.png">
 
@@ -222,14 +268,16 @@ let card=`
 
 <div class="route">${origen} ✈ ${destino}</div>
 
-<div class="boxes">
+<div class="flight-boxes">
 
-<div class="box">
-<b>IDA</b><br>${ida}
+<div class="flight">
+<div class="flight-title">IDA</div>
+${ida}
 </div>
 
-<div class="box">
-<b>REGRESO</b><br>${regreso}
+<div class="flight">
+<div class="flight-title">REGRESO</div>
+${regreso}
 </div>
 
 </div>
@@ -252,16 +300,29 @@ WhatsApp
 </div>
 
 </div>
-
 </div>
 
 `
 
-container.innerHTML+=card
+document.getElementById("cards").innerHTML+=card
 
 }
 
+function filtrar(){
+
+let texto=document.getElementById("buscar").value.toLowerCase()
+
+let cards=document.querySelectorAll(".card")
+
+cards.forEach(c=>{
+
+let destino=c.dataset.destino.toLowerCase()
+
+c.style.display=destino.includes(texto) ? "block":"none"
+
 })
+
+}
 
 </script>
 
