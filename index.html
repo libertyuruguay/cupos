@@ -335,9 +335,7 @@ USD ${p.tarifa}
 Consultar
 </button>
 
-<button class="btn whatsapp" onclick='whatsapp(${JSON.stringify(p)})'>
-WhatsApp
-</button>
+
 
 </div>
 
@@ -367,13 +365,6 @@ window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURICom
 
 }
 
-function whatsapp(p){
-
-let msg=`Consulta cupos ${p.destino}`
-
-window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
-
-}
 
 </script>
 
