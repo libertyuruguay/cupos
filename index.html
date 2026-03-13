@@ -79,9 +79,22 @@ header img{
     text-align:center;
 }
 
-.flight{
+/* Contenedor flex para ida y regreso */
+.flights-container{
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.flight-column{
+    flex:1;
+    min-width:140px;
+}
+
+/* Escala debajo de cada vuelo */
+.flight, .scale{
     background:#f1f4f9;
-    padding:12px;
+    padding:10px;
     border-radius:8px;
     margin-bottom:10px;
     font-size:14px;
@@ -134,7 +147,7 @@ fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
     let rows=data.split("\n").slice(2).map(r=>r.split(","))
-    
+
     for(let i=0;i<rows.length;i+=2){
         let ida=rows[i]
         let regreso=rows[i+1]
@@ -151,18 +164,17 @@ fetch(CSV)
         let idaHoraSalida=ida[5]
         let idaHoraLlegada=ida[6]
 
-        // Escala
-        let escalaInfo=""
-        let escalaDestino=destino
+        // Escala IDA
         let escalaOrigen="", escalaCompania="", escalaFecha="", escalaHoraSalida="", escalaHoraLlegada=""
         if(escala=="SI"){
-            escalaDestino=ida[8]
             escalaOrigen=ida[7]
+            escalaDestino=ida[8]
             escalaCompania=ida[9]
             escalaFecha=ida[10]
             escalaHoraSalida=ida[11]
             escalaHoraLlegada=ida[12]
-            escalaInfo="Escala"
+        } else {
+            escalaDestino=destino
         }
 
         // REGRESO
@@ -173,6 +185,7 @@ fetch(CSV)
         let regresoHoraSalida=regreso[5]
         let regresoHoraLlegada=regreso[6]
 
+        // Escala REGRESO
         let regresoEscala="", regresoEscalaOrigen="", regresoEscalaDestino="", regresoEscalaCompania="", regresoEscalaFecha="", regresoEscalaHoraSalida="", regresoEscalaHoraLlegada=""
         if(regreso[0]=="SI"){
             regresoEscala="Escala"
@@ -225,19 +238,15 @@ Cupos disponibles: ${cupos}`
     <div class="card">
         <img class="plane" src="avion-cupos.png">
         <div class="route">${origen} - ${escalaDestino}</div>
-        <div class="flight">
-            <b>IDA</b><br>
-            ${origen} → ${destino} | ${idaCompania} | ${idaFecha} ${idaHoraSalida}-${idaHoraLlegada}
-        </div>
-        ${escalaOrigen ? `
-        <div class="flight">
-            <b>Escala</b><br>
-            ${escalaOrigen} → ${escalaDestino} | ${escalaCompania} | ${escalaFecha} ${escalaHoraSalida}-${escalaHoraLlegada}
-        </div>` : ''}
-        <div class="flight">
-            <b>REGRESO</b><br>
-            ${regresoOrigen} → ${regresoDestino} | ${regresoCompania} | ${regresoFecha} ${regresoHoraSalida}-${regresoHoraLlegada}
-            ${regresoEscala ? `<br><b>Escala</b> ${regresoEscalaOrigen} → ${regresoEscalaDestino} | ${regresoEscalaCompania} | ${regresoEscalaFecha} ${regresoEscalaHoraSalida}-${regresoEscalaHoraLlegada}` : ''}
+        <div class="flights-container">
+            <div class="flight-column">
+                <div class="flight"><b>IDA</b><br>${origen} → ${destino} | ${idaCompania} | ${idaFecha} ${idaHoraSalida}-${idaHoraLlegada}</div>
+                ${escalaOrigen ? `<div class="scale"><b>Escala</b><br>${escalaOrigen} → ${escalaDestino} | ${escalaCompania} | ${escalaFecha} ${escalaHoraSalida}-${escalaHoraLlegada}</div>` : ''}
+            </div>
+            <div class="flight-column">
+                <div class="flight"><b>REGRESO</b><br>${regresoOrigen} → ${regresoDestino} | ${regresoCompania} | ${regresoFecha} ${regresoHoraSalida}-${regresoHoraLlegada}</div>
+                ${regresoEscala ? `<div class="scale"><b>Escala</b><br>${regresoEscalaOrigen} → ${regresoEscalaDestino} | ${regresoEscalaCompania} | ${regresoEscalaFecha} ${regresoEscalaHoraSalida}-${regresoEscalaHoraLlegada}</div>` : ''}
+            </div>
         </div>
         <div class="info">Equipaje: ${equipaje}</div>
         <div class="info">Cupos disponibles: ${cupos}</div>
@@ -245,7 +254,6 @@ Cupos disponibles: ${cupos}`
         <button class="mailbtn" onclick="consultar('${asunto}', \`${cuerpo}\`)">Consultar por Mail</button>
     </div>
     `
-
     document.getElementById("cards").innerHTML += card
 }
 
