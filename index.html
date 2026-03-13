@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cupos Aéreos</title>
+<title>Cupos Aéreos Liberty</title>
 
 <style>
 
@@ -100,7 +100,7 @@ font-weight:bold;
 }
 
 .mail{background:#0b3a6f;}
-.wa{background:#25D366;}
+
 
 </style>
 </head>
@@ -131,7 +131,7 @@ for(let i=0;i<rows.length;){
 
 let escala=(rows[i][0]||"").trim().toUpperCase()
 
-// CASO ESCALA
+// CASO CON ESCALA
 if(escala==="SI"){
 
 let ida1=rows[i]
@@ -165,7 +165,7 @@ i+=4
 
 }
 
-// SIN ESCALA
+// CASO SIN ESCALA
 else{
 
 let idaRow=rows[i]
@@ -209,15 +209,13 @@ REGRESO
 ${regreso}
 
 Equipaje: ${equipaje}
-Precio: ${precio}
+Precio: USD ${precio}
 Cupos: ${cupos}
 
 Cantidad de cupos que deseo reservar:
 `
 
 let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
-
-let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
 
 let card=`
 
@@ -246,7 +244,7 @@ ${regreso}
 <div class="info">Equipaje: ${equipaje}</div>
 <div class="info">Cupos disponibles: ${cupos}</div>
 
-<div class="price">${precio}</div>
+<div class="price">USD ${precio}</div>
 
 <div class="buttons">
 
