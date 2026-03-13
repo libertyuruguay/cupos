@@ -1,301 +1,265 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
+
 <head>
+
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Cupos Aéreos Liberty</title>
 
 <style>
 
 body{
-font-family: 'Segoe UI', sans-serif;
 margin:0;
-background:linear-gradient(135deg,#eef2ff,#f7f9ff);
+font-family:Arial;
+background:#f4f6f9;
 }
 
-/* HEADER */
-
-.header{
+header{
 background:#0B3C8A;
-color:white;
 padding:20px;
 display:flex;
 align-items:center;
-justify-content:center;
-gap:15px;
+gap:20px;
+}
+
+header img{
+height:50px;
+}
+
+header h1{
+color:white;
+margin:0;
 font-size:22px;
-font-weight:600;
-box-shadow:0 4px 12px rgba(0,0,0,0.15);
 }
-
-.logo{
-height:45px;
-}
-
-/* BUSCADOR */
-
-.topbar{
-max-width:1200px;
-margin:auto;
-padding:30px 20px 10px;
-}
-
-.topbar input{
-width:100%;
-max-width:400px;
-padding:14px;
-border-radius:30px;
-border:none;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-font-size:14px;
-outline:none;
-}
-
-/* GRID */
 
 .container{
 max-width:1200px;
 margin:auto;
-padding:20px;
+padding:30px;
+}
+
+.search{
+margin-bottom:25px;
+}
+
+.search input{
+width:100%;
+padding:12px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:15px;
+}
+
+.grid{
 display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
 gap:25px;
 }
 
-/* CARD */
-
 .card{
 background:white;
-border-radius:16px;
+border-radius:14px;
 overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-transition:0.3s;
+box-shadow:0 6px 16px rgba(0,0,0,0.08);
+transition:0.25s;
 }
 
 .card:hover{
-transform:translateY(-6px);
-box-shadow:0 12px 30px rgba(0,0,0,0.15);
+transform:translateY(-5px);
+box-shadow:0 14px 30px rgba(0,0,0,0.15);
 }
 
 .card img{
 width:100%;
-height:140px;
+height:160px;
 object-fit:cover;
 }
 
-.card-body{
+.card-content{
 padding:18px;
 }
 
-/* RUTA */
-
 .route{
-font-size:18px;
-font-weight:600;
-margin-bottom:6px;
+font-size:20px;
+font-weight:700;
+color:#0B3C8A;
 }
 
-/* AIRLINE */
-
-.company{
+.airline{
+margin-top:8px;
 display:flex;
 align-items:center;
 gap:6px;
 font-size:13px;
-color:#555;
-margin-bottom:10px;
 }
 
 .airlogo{
-height:18px;
+height:16px;
 }
 
-/* INFO */
-
-.info{
+.details{
 font-size:13px;
-margin:4px 0;
-color:#444;
+margin-top:10px;
+line-height:1.6;
 }
-
-/* PRECIO */
 
 .price{
-font-size:22px;
+font-size:26px;
 font-weight:700;
 color:#0B3C8A;
 margin-top:12px;
 }
 
-/* CUPOS */
-
-.badge{
-background:#ff4d4d;
-color:white;
-font-size:11px;
-padding:5px 9px;
-border-radius:20px;
-display:inline-block;
-margin-top:6px;
-}
-
-/* BOTONES */
-
 .buttons{
-margin-top:15px;
 display:flex;
 gap:10px;
+margin-top:15px;
 }
 
 .btn{
 flex:1;
 padding:10px;
 border:none;
-border-radius:8px;
-cursor:pointer;
+border-radius:6px;
 font-size:13px;
 font-weight:600;
+cursor:pointer;
 color:white;
-text-align:center;
-text-decoration:none;
-transition:0.2s;
 }
 
 .mail{
 background:#1a73e8;
 }
 
-.mail:hover{
-background:#1559b7;
-}
-
 .whatsapp{
 background:#25D366;
 }
 
-.whatsapp:hover{
-background:#1fb856;
-}
-
 </style>
+
 </head>
 
 <body>
 
-<div class="header">
-<img src="liberty.png" class="logo">
-<span>Cupos Aéreos Liberty</span>
+<header>
+
+<img src="liberty.png">
+
+<h1>Cupos Aéreos Liberty</h1>
+
+</header>
+
+<div class="container">
+
+<div class="search">
+<input id="buscador" placeholder="Buscar destino..." onkeyup="buscar()">
 </div>
 
-<div class="topbar">
-<input id="search" placeholder="Buscar destino, origen o aerolínea">
-</div>
+<div class="grid" id="resultados"></div>
 
-<div class="container" id="lista"></div>
+</div>
 
 <script>
 
-let url="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+
+const logos={
+"LA":"https://upload.wikimedia.org/wikipedia/commons/8/8b/LATAM_Airlines_logo.svg",
+"G3":"https://upload.wikimedia.org/wikipedia/commons/6/6d/GOL_Linhas_A%C3%A9reas_logo.svg",
+"AD":"https://upload.wikimedia.org/wikipedia/commons/f/f4/Azul_Brazilian_Airlines_logo.svg"
+}
 
 let promos=[]
 
-let logos={
-"LA":"https://logo.clearbit.com/latam.com",
-"G3":"https://logo.clearbit.com/voegol.com.br",
-"AR":"https://logo.clearbit.com/aerolineas.com.ar",
-"CM":"https://logo.clearbit.com/copaair.com"
-}
-
-fetch(url)
+fetch(csvURL)
 .then(r=>r.text())
-.then(data=>{
+.then(t=>{
 
-let rows=data.split("\n").slice(1)
+let rows=t.split("\n").slice(2)
 
 rows.forEach(r=>{
 
 let c=r.split(",")
 
+if(c.length<9)return
+
 promos.push({
+
 origen:c[0],
 destino:c[1],
 compania:c[2],
-salida:c[3],
-regreso:c[4],
-disp:c[5],
-tarifa:c[6],
-equipaje:c[7]
-})
+fecha:c[3],
+salida:c[4],
+llegada:c[5],
+cupos:c[6],
+tarifa:c[7],
+equipaje:c[8]
 
 })
 
-mostrar()
+})
+
+mostrar(promos)
 
 })
 
-function mostrar(){
+function mostrar(data){
 
-let cont=document.getElementById("lista")
-cont.innerHTML=""
+let html=""
 
-let filtro=document.getElementById("search").value.toLowerCase()
-
-let lista=promos.filter(p=>
-
-p.destino.toLowerCase().includes(filtro) ||
-p.origen.toLowerCase().includes(filtro) ||
-p.compania.toLowerCase().includes(filtro)
-
-)
-
-lista.forEach(p=>{
-
-cont.innerHTML+=card(p)
-
-})
-
-}
-
-function card(p){
+data.forEach(p=>{
 
 let logo=logos[p.compania]||""
 
-let badge=p.disp<=5?`<div class="badge">Últimos ${p.disp}</div>`:""
-
-return`
+html+=`
 
 <div class="card">
 
 <img src="avion-cupos.png">
 
-<div class="card-body">
+<div class="card-content">
 
-<div class="route">${p.origen} → ${p.destino}</div>
+<div class="route">${p.origen} ✈ ${p.destino}</div>
 
-<div class="company">
-${logo?`<img class="airlogo" src="${logo}" onerror="this.style.display='none'">`:``}
+<div class="airline">
+
+${logo?`<img class="airlogo" src="${logo}">`:``}
+
 ${p.compania}
+
 </div>
 
-<div class="info"><b>Salida:</b> ${p.salida}</div>
-<div class="info"><b>Regreso:</b> ${p.regreso}</div>
-<div class="info"><b>Equipaje:</b> ${p.equipaje}</div>
-<div class="info"><b>Cupos disponibles:</b> ${p.disp}</div>
+<div class="details">
 
-<div class="price">USD ${p.tarifa}</div>
+Fecha: ${p.fecha}<br>
 
-${badge}
+Salida: ${p.salida}<br>
+
+Llegada: ${p.llegada}<br>
+
+Equipaje: ${p.equipaje}<br>
+
+Cupos disponibles: ${p.cupos}
+
+</div>
+
+<div class="price">
+
+USD ${p.tarifa}
+
+</div>
 
 <div class="buttons">
 
 <button class="btn mail" onclick='mail(${JSON.stringify(p)})'>
-Consultar Mail
+Consultar
 </button>
 
-<a class="btn whatsapp"
-target="_blank"
-href="https://wa.me/59893488519?text=Consulta%20cupo%20${p.origen}%20-%20${p.destino}">
+<button class="btn whatsapp" onclick='whatsapp(${JSON.stringify(p)})'>
 WhatsApp
-</a>
+</button>
 
 </div>
 
@@ -305,38 +269,62 @@ WhatsApp
 
 `
 
+})
+
+document.getElementById("resultados").innerHTML=html
+
 }
 
-document.getElementById("search").addEventListener("keyup",mostrar)
+function buscar(){
+
+let q=document.getElementById("buscador").value.toLowerCase()
+
+let f=promos.filter(p=>
+
+p.destino.toLowerCase().includes(q) ||
+p.origen.toLowerCase().includes(q)
+
+)
+
+mostrar(f)
+
+}
 
 function mail(p){
 
 let cupos=prompt("¿Cuántos cupos desean reservar?")
 
-if(!cupos) return
+if(!cupos)return
 
 let asunto=`${p.origen} - ${p.destino}`
 
-let cuerpo=
-`Solicitud de Cupos Aéreos
+let cuerpo=`
 
-Ruta: ${p.origen} → ${p.destino}
-Compañía: ${p.compania}
+Consulta de cupos aéreos
+
+Ruta: ${p.origen} - ${p.destino}
+
+Fecha: ${p.fecha}
+
 Salida: ${p.salida}
-Regreso: ${p.regreso}
+Llegada: ${p.llegada}
+
+Compañía: ${p.compania}
+
 Equipaje: ${p.equipaje}
+
 Tarifa: USD ${p.tarifa}
 
 Cupos solicitados: ${cupos}
 
-Disponibilidad informada: ${p.disp}
 `
 
-window.location.href=`mailto:reservas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
 }
 
 </script>
 
 </body>
+
 </html>
