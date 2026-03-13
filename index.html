@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cupos Aéreos Liberty</title>
+<title>Cupos Aéreos</title>
 
 <style>
 
@@ -22,23 +22,10 @@ header img{
 height:55px;
 }
 
-.search{
-text-align:center;
-padding:25px;
-}
-
-.search input{
-width:320px;
-padding:12px;
-border-radius:8px;
-border:1px solid #ccc;
-font-size:16px;
-}
-
 .container{
-max-width:1400px;
+max-width:1300px;
 margin:auto;
-padding:10px 30px 40px;
+padding:30px;
 }
 
 .grid{
@@ -51,13 +38,7 @@ gap:25px;
 background:white;
 border-radius:12px;
 overflow:hidden;
-box-shadow:0 8px 25px rgba(0,0,0,0.08);
-transition:all .25s;
-}
-
-.card:hover{
-transform:translateY(-6px);
-box-shadow:0 15px 40px rgba(0,0,0,0.15);
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
 }
 
 .card img{
@@ -74,15 +55,15 @@ padding:18px;
 font-size:22px;
 font-weight:bold;
 color:#0b3a6f;
-margin-bottom:14px;
+margin-bottom:12px;
 }
 
-.flight-boxes{
+.boxes{
 display:flex;
-gap:12px;
+gap:10px;
 }
 
-.flight{
+.box{
 flex:1;
 background:#f1f4f9;
 padding:12px;
@@ -90,22 +71,16 @@ border-radius:8px;
 font-size:13px;
 }
 
-.flight-title{
-font-weight:bold;
-margin-bottom:6px;
-color:#0b3a6f;
-}
-
 .info{
-margin-top:12px;
+margin-top:10px;
 font-size:14px;
 }
 
 .price{
-font-size:24px;
+font-size:22px;
 color:#0b3a6f;
 font-weight:bold;
-margin-top:10px;
+margin-top:8px;
 }
 
 .buttons{
@@ -127,15 +102,6 @@ font-weight:bold;
 .mail{background:#0b3a6f;}
 .wa{background:#25D366;}
 
-.fade{
-animation:fadein .6s;
-}
-
-@keyframes fadein{
-from{opacity:0; transform:translateY(10px);}
-to{opacity:1; transform:translateY(0);}
-}
-
 </style>
 </head>
 
@@ -145,27 +111,11 @@ to{opacity:1; transform:translateY(0);}
 <img src="liberty.png">
 </header>
 
-<div class="search">
-<input id="buscar" placeholder="Buscar destino..." onkeyup="filtrar()">
-</div>
-
 <div class="container">
 <div class="grid" id="cards"></div>
 </div>
 
 <script>
-
-const destinos={
-GRU:"São Paulo",
-GIG:"Rio de Janeiro",
-MIA:"Miami",
-MAD:"Madrid",
-BCN:"Barcelona",
-LIM:"Lima",
-BOG:"Bogotá",
-SCL:"Santiago",
-EZE:"Buenos Aires"
-}
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
@@ -181,51 +131,62 @@ for(let i=0;i<rows.length;){
 
 let escala=(rows[i][0]||"").trim().toUpperCase()
 
+// CASO ESCALA
 if(escala==="SI"){
 
-let r1=rows[i]
-let r2=rows[i+1]
-let r3=rows[i+2]
-let r4=rows[i+3]
+let ida1=rows[i]
+let ida2=rows[i+1]
 
-let origen=r1[1]
-let destino=r2[2]
+let reg1=rows[i+2]
+let reg2=rows[i+3]
 
-let destinoNombre=destinos[destino] || destino
+let origen=ida1[1]
+let destino=ida2[2]
 
 let ida=`
-${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}<br>
-Escala ${r2[1]}<br>
-${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}
+${ida1[3]} ${ida1[4]} ${ida1[5]}-${ida1[6]}<br>
+Escala ${ida2[1]}<br>
+${ida2[3]} ${ida2[4]} ${ida2[5]}-${ida2[6]}
 `
 
 let regreso=`
-${r3[3]} ${r3[4]} ${r3[5]}-${r3[6]}<br>
-Escala ${r4[1]}<br>
-${r4[3]} ${r4[4]} ${r4[5]}-${r4[6]}
+${reg1[3]} ${reg1[4]} ${reg1[5]}-${reg1[6]}<br>
+Escala ${reg2[1]}<br>
+${reg2[3]} ${reg2[4]} ${reg2[5]}-${reg2[6]}
 `
 
-crearCard(origen,destinoNombre,ida,regreso,r4[7],r4[8],r4[9])
+let cupos=reg2[7]
+let precio=reg2[8]
+let equipaje=reg2[9]
+
+crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
 
 i+=4
 
 }
 
+// SIN ESCALA
 else{
 
-let r1=rows[i]
-let r2=rows[i+1]
+let idaRow=rows[i]
+let regRow=rows[i+1]
 
-let origen=r1[1]
-let destino=r2[2]
+let origen=idaRow[1]
+let destino=idaRow[2]
 
-let destinoNombre=destinos[destino] || destino
+let ida=`
+${idaRow[3]} ${idaRow[4]} ${idaRow[5]}-${idaRow[6]}
+`
 
-let ida=`${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}`
+let regreso=`
+${regRow[3]} ${regRow[4]} ${regRow[5]}-${regRow[6]}
+`
 
-let regreso=`${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}`
+let cupos=regRow[7]
+let precio=regRow[8]
+let equipaje=regRow[9]
 
-crearCard(origen,destinoNombre,ida,regreso,r2[7],r2[8],r2[9])
+crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
 
 i+=2
 
@@ -239,7 +200,7 @@ function crearCard(origen,destino,ida,regreso,cupos,precio,equipaje){
 
 let asunto=`Consulta cupos ${origen} ${destino}`
 
-let cuerpo=`Ruta: ${origen} ${destino}
+let cuerpo=`Ruta ${origen} ${destino}
 
 IDA
 ${ida}
@@ -260,7 +221,7 @@ let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
 
 let card=`
 
-<div class="card fade" data-destino="${destino}">
+<div class="card">
 
 <img src="avion-cupos.png">
 
@@ -268,15 +229,15 @@ let card=`
 
 <div class="route">${origen} ✈ ${destino}</div>
 
-<div class="flight-boxes">
+<div class="boxes">
 
-<div class="flight">
-<div class="flight-title">IDA</div>
+<div class="box">
+<b>IDA</b><br>
 ${ida}
 </div>
 
-<div class="flight">
-<div class="flight-title">REGRESO</div>
+<div class="box">
+<b>REGRESO</b><br>
 ${regreso}
 </div>
 
@@ -300,27 +261,11 @@ WhatsApp
 </div>
 
 </div>
-</div>
 
+</div>
 `
 
 document.getElementById("cards").innerHTML+=card
-
-}
-
-function filtrar(){
-
-let texto=document.getElementById("buscar").value.toLowerCase()
-
-let cards=document.querySelectorAll(".card")
-
-cards.forEach(c=>{
-
-let destino=c.dataset.destino.toLowerCase()
-
-c.style.display=destino.includes(texto) ? "block":"none"
-
-})
 
 }
 
