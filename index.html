@@ -79,13 +79,18 @@ background:#eef3fb;
 padding:12px;
 border-radius:8px;
 margin-bottom:10px;
-font-size:13px;
-line-height:1.6;
 }
 
-.scale{
-color:#555;
-padding-left:10px;
+.flighttitle{
+font-weight:bold;
+margin-bottom:6px;
+}
+
+.flightline{
+font-family:monospace;
+font-size:13px;
+color:#333;
+line-height:1.7;
 }
 
 .info{
@@ -213,15 +218,15 @@ let card=`
 <div class="route">${origen} - ${destino}</div>
 
 <div class="flight">
-✈ <b>IDA</b><br>
-${ida}
-${idaEscala ? `<div class="scale">${idaEscala}</div>`:""}
+<div class="flighttitle">✈ IDA</div>
+<div class="flightline">${ida}</div>
+${idaEscala ? `<div class="flightline">${idaEscala}</div>`:""}
 </div>
 
 <div class="flight">
-✈ <b>REGRESO</b><br>
-${regreso}
-${regresoEscala ? `<div class="scale">${regresoEscala}</div>`:""}
+<div class="flighttitle">🛬 REGRESO</div>
+<div class="flightline">${regreso}</div>
+${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 </div>
 
 <div class="info">Equipaje: ${equipaje}</div>
