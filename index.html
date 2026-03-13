@@ -4,7 +4,7 @@
 <head>
 
 <meta charset="UTF-8">
-<title>Cupos Aéreos Liberty</title>
+<title>Cupos Liberty</title>
 
 <style>
 
@@ -16,7 +16,7 @@ margin:0;
 
 header{
 background:#0b3a6f;
-padding:18px;
+padding:15px;
 text-align:center;
 }
 
@@ -32,7 +32,7 @@ padding:30px;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(330px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:25px;
 }
 
@@ -40,7 +40,7 @@ gap:25px;
 background:white;
 border-radius:12px;
 padding:20px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
+box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 
 .route{
@@ -59,7 +59,7 @@ font-size:14px;
 }
 
 .info{
-margin-top:8px;
+margin-top:6px;
 font-size:14px;
 }
 
@@ -69,25 +69,6 @@ font-weight:bold;
 color:#0b3a6f;
 margin-top:10px;
 }
-
-.buttons{
-display:flex;
-gap:10px;
-margin-top:12px;
-}
-
-.btn{
-flex:1;
-padding:10px;
-border:none;
-border-radius:6px;
-cursor:pointer;
-color:white;
-font-weight:bold;
-}
-
-.mail{background:#0b3a6f;}
-.wa{background:#25D366;}
 
 </style>
 
@@ -111,51 +92,46 @@ fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
 
-let rows=data.split("\n").slice(1).map(r=>r.split(","))
+let rows=data.split("\n").slice(2).map(r=>r.split(","))
 
-rows.forEach(row=>{
+for(let i=0;i<rows.length;i+=2){
 
-let origen=row[1]
-let destino=row[2]
+let ida=rows[i]
+let regreso=rows[i+1]
 
-let compania=row[3]
-let fecha=row[4]
-let salida=row[5]
-let llegada=row[6]
+if(!regreso) break
 
-let escalaOrigen=row[7]
-let escalaDestino=row[8]
+let escala=ida[0]
 
-let companiaReg=row[9]
-let fechaReg=row[10]
-let salidaReg=row[11]
-let llegadaReg=row[12]
+let origen=ida[1]
+let destino=ida[2]
 
-let cupos=row[13]
-let precio=row[14]
-let equipaje=row[15]
+let idaInfo=`${ida[3]} ${ida[4]} ${ida[5]}-${ida[6]}`
 
-let ida=`${compania} ${fecha} ${salida} - ${llegada}`
+let escalaInfo=""
 
-if(escalaOrigen && escalaDestino){
-ida+=`<br>Escala ${escalaOrigen} → ${escalaDestino}`
+if(escala=="SI"){
+
+escalaInfo=`
+<br><b>Escala</b><br>
+${ida[7]} → ${ida[8]}<br>
+${ida[9]} ${ida[10]} ${ida[11]}-${ida[12]}
+`
 }
 
-let regreso=`${companiaReg} ${fechaReg} ${salidaReg} - ${llegadaReg}`
+let regresoInfo=`${regreso[3]} ${regreso[4]} ${regreso[5]}-${regreso[6]}`
 
-crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
+let cupos=ida[13]
+let precio=ida[14]
+let equipaje=ida[15]
+
+crearCard(origen,destino,idaInfo,escalaInfo,regresoInfo,cupos,precio,equipaje)
+
+}
 
 })
 
-})
-
-function crearCard(origen,destino,ida,regreso,cupos,precio,equipaje){
-
-let asunto=`Consulta cupos ${origen} ${destino}`
-
-let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}`
-
-let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
+function crearCard(origen,destino,ida,escala,regreso,cupos,precio,equipaje){
 
 let card=`
 
@@ -166,6 +142,7 @@ let card=`
 <div class="flight">
 <b>IDA</b><br>
 ${ida}
+${escala}
 </div>
 
 <div class="flight">
@@ -178,18 +155,6 @@ ${regreso}
 
 <div class="price">USD ${precio}</div>
 
-<div class="buttons">
-
-<button class="btn mail" onclick="window.location.href='${mail}'">
-Consultar Mail
-</button>
-
-<button class="btn wa" onclick="window.open('${wa}')">
-WhatsApp
-</button>
-
-</div>
-
 </div>
 `
 
@@ -200,5 +165,4 @@ document.getElementById("cards").innerHTML+=card
 </script>
 
 </body>
-
 </html>
