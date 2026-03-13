@@ -152,7 +152,7 @@ if(!regreso) break
 let origen=ida[1]
 let destino=ida[2]
 
-let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} ${ida[5]}-${ida[6]}`
+let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} ${ida[5]} - ${ida[6]}`
 
 let idaEscala=""
 let escalaDestino=destino
@@ -161,17 +161,17 @@ if(ida[0]=="SI"){
 
 escalaDestino=ida[8]
 
-idaEscala=`↳ ${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} ${ida[11]}-${ida[12]}`
+idaEscala=`↳ ${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} ${ida[11]} - ${ida[12]}`
 
 }
 
-let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} ${regreso[5]}-${regreso[6]}`
+let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} ${regreso[5]} - ${regreso[6]}`
 
 let regresoEscala=""
 
 if(regreso[0]=="SI"){
 
-regresoEscala=`↳ ${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} ${regreso[11]}-${regreso[12]}`
+regresoEscala=`↳ ${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} ${regreso[11]} - ${regreso[12]}`
 
 }
 
