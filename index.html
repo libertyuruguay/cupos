@@ -8,6 +8,8 @@
 
 <title>Cupos Aéreos Liberty</title>
 
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
 <style>
 
 body{
@@ -173,17 +175,17 @@ const logos={
 
 let promos=[]
 
-fetch(csvURL)
-.then(r=>r.text())
-.then(t=>{
+Papa.parse(csvURL,{
 
-let rows=t.split("\n").slice(2)
+download:true,
 
-rows.forEach(r=>{
+complete:function(results){
 
-let c=r.split(",")
+let rows=results.data.slice(2)
 
-if(c.length<9)return
+rows.forEach(c=>{
+
+if(!c[0]) return
 
 promos.push({
 
@@ -202,6 +204,8 @@ equipaje:c[8]
 })
 
 mostrar(promos)
+
+}
 
 })
 
@@ -234,13 +238,9 @@ ${p.compania}
 <div class="details">
 
 Fecha: ${p.fecha}<br>
-
 Salida: ${p.salida}<br>
-
 Llegada: ${p.llegada}<br>
-
 Equipaje: ${p.equipaje}<br>
-
 Cupos disponibles: ${p.cupos}
 
 </div>
@@ -320,6 +320,14 @@ Cupos solicitados: ${cupos}
 `
 
 window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+
+}
+
+function whatsapp(p){
+
+let msg=`Consulta cupos ${p.origen} - ${p.destino} ${p.fecha}`
+
+window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
 
 }
 
