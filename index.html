@@ -23,7 +23,7 @@ height:55px;
 }
 
 .container{
-max-width:1300px;
+max-width:1200px;
 margin:auto;
 padding:30px;
 }
@@ -39,12 +39,6 @@ background:white;
 border-radius:12px;
 overflow:hidden;
 box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
-
-.card img{
-width:100%;
-height:150px;
-object-fit:cover;
 }
 
 .card-body{
@@ -123,7 +117,10 @@ fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
 
-let rows=data.split("\n").slice(2).map(r=>r.split(","))
+let rows=data.split("\n")
+.slice(2)
+.map(r=>r.split(","))
+.filter(r => r[1] && r[1].trim() !== "") // elimina filas vacías
 
 let container=document.getElementById("cards")
 
@@ -131,8 +128,8 @@ for(let i=0;i<rows.length;){
 
 let escala=(rows[i][0]||"").trim().toUpperCase()
 
-// CASO CON ESCALA
-if(escala==="SI"){
+// SI TIENE ESCALA
+if(escala==="SI" && rows[i+3]){
 
 let ida1=rows[i]
 let ida2=rows[i+1]
@@ -165,8 +162,8 @@ i+=4
 
 }
 
-// CASO SIN ESCALA
-else{
+// SIN ESCALA
+else if(rows[i+1]){
 
 let idaRow=rows[i]
 let regRow=rows[i+1]
@@ -190,6 +187,10 @@ crearCard(origen,destino,ida,regreso,cupos,precio,equipaje)
 
 i+=2
 
+}else{
+
+i++
+
 }
 
 }
@@ -200,30 +201,13 @@ function crearCard(origen,destino,ida,regreso,cupos,precio,equipaje){
 
 let asunto=`Consulta cupos ${origen} ${destino}`
 
-let cuerpo=`Ruta ${origen} ${destino}
-
-IDA
-${ida}
-
-REGRESO
-${regreso}
-
-Equipaje: ${equipaje}
-Precio: USD ${precio}
-Cupos: ${cupos}
-
-Cantidad de cupos que deseo reservar:
-`
-
-let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}`
 
 let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
 
 let card=`
 
 <div class="card">
-
-<img src="avion-cupos.png">
 
 <div class="card-body">
 
