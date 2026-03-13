@@ -1,50 +1,36 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Cupos Aéreos Liberty</title>
-
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <style>
 
 body{
-margin:0;
 font-family:Arial;
-background:#f4f6f9;
+background:#f4f6fb;
+margin:0;
 }
 
 header{
-background:#0B3C8A;
+background:#0b3a6f;
 padding:20px;
-display:flex;
-align-items:center;
-gap:20px;
+text-align:center;
 }
 
 header img{
-height:50px;
-}
-
-header h1{
-color:white;
-margin:0;
-font-size:22px;
+height:60px;
 }
 
 .container{
-max-width:1200px;
+max-width:1400px;
 margin:auto;
 padding:30px;
 }
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
 gap:25px;
 }
 
@@ -52,7 +38,7 @@ gap:25px;
 background:white;
 border-radius:14px;
 overflow:hidden;
-box-shadow:0 6px 16px rgba(0,0,0,0.08);
+box-shadow:0 6px 18px rgba(0,0,0,0.08);
 }
 
 .card img{
@@ -61,51 +47,47 @@ height:160px;
 object-fit:cover;
 }
 
-.card-content{
+.card-body{
 padding:18px;
 }
 
-.title{
+.route{
 font-size:22px;
-font-weight:700;
-color:#0B3C8A;
+font-weight:bold;
+color:#0b3a6f;
+margin-bottom:10px;
+}
+
+.boxes{
+display:flex;
+gap:10px;
 margin-bottom:12px;
 }
 
-.flights{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-}
-
 .box{
-background:#f1f3f6;
+flex:1;
+background:#f1f4f9;
 padding:10px;
-border-radius:6px;
+border-radius:8px;
 font-size:13px;
 }
 
-.box b{
-color:#0B3C8A;
-}
-
-.details{
-margin-top:12px;
-font-size:13px;
-line-height:1.6;
+.info{
+font-size:14px;
+margin-top:8px;
 }
 
 .price{
-font-size:26px;
-font-weight:700;
-color:#0B3C8A;
+font-size:22px;
+color:#0b3a6f;
+font-weight:bold;
 margin-top:10px;
 }
 
 .buttons{
 display:flex;
 gap:10px;
-margin-top:15px;
+margin-top:12px;
 }
 
 .btn{
@@ -113,178 +95,175 @@ flex:1;
 padding:10px;
 border:none;
 border-radius:6px;
-font-size:13px;
-font-weight:600;
 cursor:pointer;
 color:white;
+font-weight:bold;
 }
 
-.mail{background:#1a73e8;}
-.whatsapp{background:#25D366;}
+.mail{background:#0b3a6f;}
+.wa{background:#25D366;}
 
 </style>
-
 </head>
 
 <body>
 
 <header>
-
 <img src="liberty.png">
-<h1>Cupos Aéreos Liberty</h1>
-
 </header>
 
 <div class="container">
 
-<div class="grid" id="resultados"></div>
+<div class="grid" id="cards"></div>
 
 </div>
 
 <script>
 
-const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-let promos=[]
+fetch(CSV)
+.then(r=>r.text())
+.then(text=>{
 
-Papa.parse(csvURL,{
-download:true,
-complete:function(results){
+let rows=text.split("\n").slice(2).map(r=>r.split(","))
 
-let rows=results.data.slice(2)
+let container=document.getElementById("cards")
 
-for(let i=0;i<rows.length;i++){
+for(let i=0;i<rows.length;){
 
-let r=rows[i]
+let escala=rows[i][0]
 
-if(r[0]=="SI"){
+if(escala=="SI"){
 
-let ida1=rows[i]
-let ida2=rows[i+1]
-let reg1=rows[i+2]
-let reg2=rows[i+3]
+let r1=rows[i]
+let r2=rows[i+1]
+let r3=rows[i+2]
+let r4=rows[i+3]
 
-if(!reg2) break
+let origen=r1[1]
+let destino=r2[2]
 
-promos.push({
+let html=createCard(
 
-destino:ida2[2],
-
-ida:[ida1,ida2],
-regreso:[reg1,reg2],
-
-cupos:reg2[7],
-tarifa:reg2[8],
-equipaje:reg2[9]
-
-})
-
-i+=3
-
-}else{
-
-let ida=rows[i]
-let regreso=rows[i+1]
-
-if(!regreso) break
-
-promos.push({
-
-destino:regreso[2],
-
-ida:[ida],
-regreso:[regreso],
-
-cupos:regreso[7],
-tarifa:regreso[8],
-equipaje:regreso[9]
-
-})
-
-i+=1
-
-}
-
-}
-
-mostrar()
-
-}
-
-})
-
-function tramoHTML(t){
-
-let html=""
-
-t.forEach(v=>{
-
-html+=`
-
-${v[3]}<br>
-${v[1]} → ${v[2]}<br>
-${v[4]}<br>
-${v[5]} - ${v[6]}<br><br>
+origen,
+destino,
 
 `
+${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}<br>
+Escala ${r2[1]}<br>
+${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}
+`,
 
-})
+`
+${r3[3]} ${r3[4]} ${r3[5]}-${r3[6]}<br>
+Escala ${r4[1]}<br>
+${r4[3]} ${r4[4]} ${r4[5]}-${r4[6]}
+`,
 
-return html
+r4[9],
+r4[7],
+r4[8]
+
+)
+
+container.innerHTML+=html
+
+i+=4
 
 }
 
-function mostrar(){
+else{
 
-let html=""
+let r1=rows[i]
+let r2=rows[i+1]
 
-promos.forEach(p=>{
+let origen=r1[1]
+let destino=r1[2]
 
-html+=`
+let html=createCard(
+
+origen,
+destino,
+
+`${r1[3]} ${r1[4]} ${r1[5]}-${r1[6]}`,
+
+`${r2[3]} ${r2[4]} ${r2[5]}-${r2[6]}`,
+
+r2[9],
+r2[7],
+r2[8]
+
+)
+
+container.innerHTML+=html
+
+i+=2
+
+}
+
+}
+
+})
+
+function createCard(origen,destino,ida,regreso,equipaje,cupos,precio){
+
+let asunto=`Consulta cupos ${origen} ${destino}`
+
+let body=`
+Ruta: ${origen} ${destino}
+
+IDA
+${ida}
+
+REGRESO
+${regreso}
+
+Equipaje: ${equipaje}
+
+Precio: ${precio}
+
+Cupos disponibles: ${cupos}
+
+Cantidad de cupos solicitados:
+`
+
+let mail=`mailto:ventas@liberty.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`
+
+let wa=`https://wa.me/59800000000?text=${encodeURIComponent(asunto)}`
+
+return`
 
 <div class="card">
 
 <img src="avion-cupos.png">
 
-<div class="card-content">
+<div class="card-body">
 
-<div class="title">${p.destino}</div>
+<div class="route">${origen} ✈ ${destino}</div>
 
-<div class="flights">
+<div class="boxes">
 
 <div class="box">
 <b>IDA</b><br>
-${tramoHTML(p.ida)}
+${ida}
 </div>
 
 <div class="box">
 <b>REGRESO</b><br>
-${tramoHTML(p.regreso)}
+${regreso}
 </div>
 
 </div>
 
-<div class="details">
+<div class="info">Equipaje: ${equipaje}</div>
+<div class="info">Cupos: ${cupos}</div>
 
-Equipaje: ${p.equipaje}<br>
-Cupos disponibles: ${p.cupos}
-
-</div>
-
-<div class="price">
-USD ${p.tarifa}
-</div>
+<div class="price">${precio}</div>
 
 <div class="buttons">
-
-<button class="btn mail" onclick='mail(${JSON.stringify(p)})'>
-Consultar
-</button>
-
-<button class="btn whatsapp" onclick='whatsapp(${JSON.stringify(p)})'>
-WhatsApp
-</button>
-
+<button class="btn mail" onclick="window.location.href='${mail}'">Consultar Mail</button>
+<button class="btn wa" onclick="window.open('${wa}')">WhatsApp</button>
 </div>
 
 </div>
@@ -292,37 +271,10 @@ WhatsApp
 </div>
 
 `
-
-})
-
-document.getElementById("resultados").innerHTML=html
-
-}
-
-function mail(p){
-
-let cupos=prompt("¿Cuántos cupos desean reservar?")
-
-if(!cupos)return
-
-let asunto=p.destino
-
-let cuerpo="Consulta cupos aéreos para "+p.destino+"\n\nCupos solicitados: "+cupos
-
-window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
-
-}
-
-function whatsapp(p){
-
-let msg=`Consulta cupos ${p.destino}`
-
-window.open(`https://wa.me/598XXXXXXXX?text=${encodeURIComponent(msg)}`)
 
 }
 
 </script>
 
 </body>
-
 </html>
