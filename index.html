@@ -44,7 +44,7 @@ padding:30px;
 
 .grid{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(350px,1fr));
 gap:25px;
 }
 
@@ -69,18 +69,13 @@ padding:18px;
 font-size:22px;
 font-weight:700;
 color:#0B3C8A;
-margin-bottom:10px;
-}
-
-.airline{
-font-size:13px;
 margin-bottom:12px;
 }
 
 .flights{
 display:grid;
 grid-template-columns:1fr 1fr;
-gap:10px;
+gap:12px;
 }
 
 .box{
@@ -151,17 +146,6 @@ color:white;
 
 const csvURL="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-const destinos={
-
-SSA:"Salvador",
-CUN:"Cancún",
-MIA:"Miami",
-GRU:"São Paulo",
-PUJ:"Punta Cana",
-MAD:"Madrid"
-
-}
-
 let promos=[]
 
 Papa.parse(csvURL,{
@@ -174,31 +158,74 @@ let rows=results.data.slice(2)
 
 for(let i=0;i<rows.length;i+=2){
 
-let ida=rows[i]
-let vuelta=rows[i+1]
+let impar=rows[i]
+let par=rows[i+1]
 
-if(!ida||!vuelta) continue
+if(!impar || !par) continue
 
-let destinoNombre=destinos[ida[1]]||ida[1]
+let escala=impar[0]
 
-promos.push({
+let card={}
 
-destino:destinoNombre,
-compania:ida[2],
+if(escala=="SI"){
 
-fecha_ida:ida[3],
-salida_ida:ida[4],
-llegada_ida:ida[5],
+card.tipo="escala"
 
-fecha_regreso:vuelta[3],
-salida_regreso:vuelta[4],
-llegada_regreso:vuelta[5],
+card.destino=par[2]
 
-equipaje:vuelta[8],
-cupos:vuelta[6],
-tarifa:vuelta[7]
+card.tramo1={
+origen:impar[1],
+destino:impar[2],
+compania:impar[3],
+fecha:impar[4],
+salida:impar[5],
+llegada:impar[6]
+}
 
-})
+card.tramo2={
+origen:par[1],
+destino:par[2],
+compania:par[3],
+fecha:par[4],
+salida:par[5],
+llegada:par[6]
+}
+
+card.cupos=par[7]
+card.tarifa=par[8]
+card.equipaje=par[9]
+
+}else{
+
+card.tipo="directo"
+
+card.destino=par[2]
+
+card.ida={
+origen:impar[1],
+destino:impar[2],
+compania:impar[3],
+fecha:impar[4],
+salida:impar[5],
+llegada:impar[6]
+}
+
+card.regreso={
+origen:par[1],
+destino:par[2],
+compania:par[3],
+fecha:par[4],
+salida:par[5],
+llegada:par[6]
+}
+
+card.cupos=par[7]
+card.tarifa=par[8]
+card.equipaje=par[9]
+
+}
+
+promos.push(card)
 
 }
 
@@ -214,6 +241,59 @@ let html=""
 
 promos.forEach(p=>{
 
+let idaHTML=""
+let regresoHTML=""
+
+if(p.tipo=="escala"){
+
+idaHTML=`
+
+<b>IDA</b><br>
+
+${p.tramo1.compania}<br>
+${p.tramo1.origen} → ${p.tramo1.destino}<br>
+${p.tramo1.fecha}<br>
+${p.tramo1.salida} - ${p.tramo1.llegada}
+
+<hr>
+
+ESCALA<br>
+
+${p.tramo2.compania}<br>
+${p.tramo2.origen} → ${p.tramo2.destino}<br>
+${p.tramo2.fecha}<br>
+${p.tramo2.salida} - ${p.tramo2.llegada}
+
+`
+
+regresoHTML=`<b>REGRESO</b><br>No aplica`
+
+}else{
+
+idaHTML=`
+
+<b>IDA</b><br>
+
+${p.ida.compania}<br>
+${p.ida.origen} → ${p.ida.destino}<br>
+${p.ida.fecha}<br>
+${p.ida.salida} - ${p.ida.llegada}
+
+`
+
+regresoHTML=`
+
+<b>REGRESO</b><br>
+
+${p.regreso.compania}<br>
+${p.regreso.origen} → ${p.regreso.destino}<br>
+${p.regreso.fecha}<br>
+${p.regreso.salida} - ${p.regreso.llegada}
+
+`
+
+}
+
 html+=`
 
 <div class="card">
@@ -224,28 +304,14 @@ html+=`
 
 <div class="title">${p.destino}</div>
 
-<div class="airline">${p.compania}</div>
-
 <div class="flights">
 
 <div class="box">
-
-<b>IDA</b><br>
-
-Fecha: ${p.fecha_ida}<br>
-Salida: ${p.salida_ida}<br>
-Llegada: ${p.llegada_ida}
-
+${idaHTML}
 </div>
 
 <div class="box">
-
-<b>REGRESO</b><br>
-
-Fecha: ${p.fecha_regreso}<br>
-Salida: ${p.salida_regreso}<br>
-Llegada: ${p.llegada_regreso}
-
+${regresoHTML}
 </div>
 
 </div>
@@ -295,29 +361,7 @@ if(!cupos)return
 
 let asunto=p.destino
 
-let cuerpo=`
-
-Consulta cupos aéreos
-
-Destino: ${p.destino}
-
-IDA
-Fecha: ${p.fecha_ida}
-Salida: ${p.salida_ida}
-Llegada: ${p.llegada_ida}
-
-REGRESO
-Fecha: ${p.fecha_regreso}
-Salida: ${p.salida_regreso}
-Llegada: ${p.llegada_regreso}
-
-Equipaje: ${p.equipaje}
-
-Tarifa: USD ${p.tarifa}
-
-Cupos solicitados: ${cupos}
-
-`
+let cuerpo="Consulta cupos aéreos para "+p.destino+"\n\nCupos solicitados: "+cupos
 
 window.location.href=`mailto:ventas@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
 
