@@ -158,7 +158,7 @@ background:#072a52;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-// MAPA DE LOGOS
+// LOGOS
 const logos = {
 "LA": "https://content.airhex.com/content/logos/airlines_LA_200_200_s.png",
 "AR": "https://content.airhex.com/content/logos/airlines_AR_200_200_s.png",
@@ -195,9 +195,10 @@ if(!regreso) break
 let origen=ida[1]
 let destino=ida[2]
 
-// DETECTAR AEROLÍNEA
-let aerolinea = ida[3].substring(0,2)
-let logo = logos[aerolinea] || "https://via.placeholder.com/100x50?text=Airline"
+// DETECCIÓN ROBUSTA DE AEROLÍNEA
+let codigoVuelo = ida[3].trim()
+let aerolinea = (codigoVuelo.match(/[A-Z]{2}/) || [""])[0]
+let logo = logos[aerolinea] || `https://via.placeholder.com/120x60?text=${aerolinea || "Airline"}`
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
