@@ -158,17 +158,6 @@ background:#072a52;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-// LOGOS
-const logos = {
-"LA": "https://content.airhex.com/content/logos/airlines_LA_200_200_s.png",
-"AR": "https://content.airhex.com/content/logos/airlines_AR_200_200_s.png",
-"IB": "https://content.airhex.com/content/logos/airlines_IB_200_200_s.png",
-"UX": "https://content.airhex.com/content/logos/airlines_UX_200_200_s.png",
-"AA": "https://content.airhex.com/content/logos/airlines_AA_200_200_s.png",
-"DL": "https://content.airhex.com/content/logos/airlines_DL_200_200_s.png",
-"CM": "https://content.airhex.com/content/logos/airlines_CM_200_200_s.png"
-}
-
 fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
@@ -177,7 +166,7 @@ let rows=data.split("\n").slice(2).map(r=>{
 
 let cols=r.split(",")
 
-while(cols.length<16){
+while(cols.length<18){ // ahora necesitamos columna R
 cols.push("")
 }
 
@@ -195,10 +184,8 @@ if(!regreso) break
 let origen=ida[1]
 let destino=ida[2]
 
-// DETECCIÓN ROBUSTA DE AEROLÍNEA
-let codigoVuelo = ida[3].trim()
-let aerolinea = (codigoVuelo.match(/[A-Z]{2}/) || [""])[0]
-let logo = logos[aerolinea] || `https://via.placeholder.com/120x60?text=${aerolinea || "Airline"}`
+// ✅ LOGO DESDE EXCEL (COLUMNA R)
+let logo = ida[17] ? ida[17].trim() : "https://via.placeholder.com/120x60?text=Airline"
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
