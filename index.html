@@ -73,12 +73,10 @@ transform:translateY(0);
 
 .plane{
 width:100%;
-height:60px;
-object-fit:contain;
-background:white;
+height:100px;
+object-fit:cover;
 border-radius:10px;
 margin-bottom:15px;
-padding:5px;
 }
 
 .route{
@@ -158,26 +156,6 @@ background:#072a52;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-// 🔥 CONVERSOR DE GOOGLE DRIVE
-function convertirDrive(url){
-
-if(!url) return ""
-
-url = url.trim()
-
-if(url.includes("drive.google.com")){
-
-let id = url.match(/\/d\/(.*?)\//)
-
-if(id && id[1]){
-return `https://drive.google.com/uc?export=view&id=${id[1]}`
-}
-
-}
-
-return url
-}
-
 fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
@@ -186,7 +164,7 @@ let rows=data.split("\n").slice(2).map(r=>{
 
 let cols=r.split(",")
 
-while(cols.length<18){
+while(cols.length<16){
 cols.push("")
 }
 
@@ -203,9 +181,6 @@ if(!regreso) break
 
 let origen=ida[1]
 let destino=ida[2]
-
-// ✅ LOGO DESDE COLUMNA R + CONVERSIÓN DRIVE
-let logo = convertirDrive(ida[17]) || "https://via.placeholder.com/120x60?text=Airline"
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
@@ -234,13 +209,13 @@ let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,logo)
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
 
 }
 
 })
 
-function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,logo){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
 
 let asunto=`${origen} - ${destino}`
 
@@ -263,7 +238,7 @@ let card=`
 
 <div class="card">
 
-<img class="plane" src="${logo}">
+<img class="plane" src="avion-cupos.png">
 
 <div class="route">${origen} - ${destino}</div>
 
