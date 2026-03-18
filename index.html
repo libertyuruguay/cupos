@@ -158,6 +158,26 @@ background:#072a52;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
+// 🔥 CONVERSOR DE GOOGLE DRIVE
+function convertirDrive(url){
+
+if(!url) return ""
+
+url = url.trim()
+
+if(url.includes("drive.google.com")){
+
+let id = url.match(/\/d\/(.*?)\//)
+
+if(id && id[1]){
+return `https://drive.google.com/uc?export=view&id=${id[1]}`
+}
+
+}
+
+return url
+}
+
 fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
@@ -166,7 +186,7 @@ let rows=data.split("\n").slice(2).map(r=>{
 
 let cols=r.split(",")
 
-while(cols.length<18){ // ahora necesitamos columna R
+while(cols.length<18){
 cols.push("")
 }
 
@@ -184,8 +204,8 @@ if(!regreso) break
 let origen=ida[1]
 let destino=ida[2]
 
-// ✅ LOGO DESDE EXCEL (COLUMNA R)
-let logo = ida[17] ? ida[17].trim() : "https://via.placeholder.com/120x60?text=Airline"
+// ✅ LOGO DESDE COLUMNA R + CONVERSIÓN DRIVE
+let logo = convertirDrive(ida[17]) || "https://via.placeholder.com/120x60?text=Airline"
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
