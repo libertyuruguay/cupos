@@ -73,10 +73,12 @@ transform:translateY(0);
 
 .plane{
 width:100%;
-height:100px;
-object-fit:cover;
+height:60px;
+object-fit:contain;
+background:white;
 border-radius:10px;
 margin-bottom:15px;
+padding:5px;
 }
 
 .route{
@@ -156,6 +158,17 @@ background:#072a52;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
+// MAPA DE LOGOS
+const logos = {
+"LA": "https://content.airhex.com/content/logos/airlines_LA_200_200_s.png",
+"AR": "https://content.airhex.com/content/logos/airlines_AR_200_200_s.png",
+"IB": "https://content.airhex.com/content/logos/airlines_IB_200_200_s.png",
+"UX": "https://content.airhex.com/content/logos/airlines_UX_200_200_s.png",
+"AA": "https://content.airhex.com/content/logos/airlines_AA_200_200_s.png",
+"DL": "https://content.airhex.com/content/logos/airlines_DL_200_200_s.png",
+"CM": "https://content.airhex.com/content/logos/airlines_CM_200_200_s.png"
+}
+
 fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
@@ -181,6 +194,10 @@ if(!regreso) break
 
 let origen=ida[1]
 let destino=ida[2]
+
+// DETECTAR AEROLÍNEA
+let aerolinea = ida[3].substring(0,2)
+let logo = logos[aerolinea] || "https://via.placeholder.com/100x50?text=Airline"
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
 
@@ -209,13 +226,13 @@ let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,logo)
 
 }
 
 })
 
-function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,logo){
 
 let asunto=`${origen} - ${destino}`
 
@@ -238,7 +255,7 @@ let card=`
 
 <div class="card">
 
-<img class="plane" src="avion-cupos.png">
+<img class="plane" src="${logo}">
 
 <div class="route">${origen} - ${destino}</div>
 
