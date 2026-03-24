@@ -11,11 +11,10 @@
 
 body{
 font-family:'Inter',sans-serif;
-background:#f5f6f8;
+background:#f4f6fb;
 margin:0;
 }
 
-/* HEADER */
 header{
 background:#0b3a6f;
 padding:15px;
@@ -35,162 +34,106 @@ header img{
 height:50px;
 }
 
-/* CONTAINER */
 .container{
-max-width:1100px;
+max-width:1200px;
 margin:auto;
 padding:30px;
 }
 
-/* CARD */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+gap:25px;
+}
+
 .card{
 background:white;
+border-radius:14px;
+padding:20px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+transition:all .35s ease;
+animation:fadeUp .6s ease;
+}
+
+.card:hover{
+transform:translateY(-8px);
+box-shadow:0 20px 40px rgba(0,0,0,0.15);
+}
+
+@keyframes fadeUp{
+from{
+opacity:0;
+transform:translateY(20px);
+}
+to{
+opacity:1;
+transform:translateY(0);
+}
+}
+
+.plane{
+width:100%;
+height:100px;
+object-fit:cover;
 border-radius:10px;
-display:flex;
-margin-bottom:20px;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
+margin-bottom:15px;
 }
 
-.left{flex:3;padding:20px;}
-
-.top{font-size:13px;color:#666;margin-bottom:10px;}
-
-.times{display:flex;justify-content:space-between;align-items:center;}
-
-.time{font-size:22px;font-weight:600;}
-.city{font-size:13px;color:#666;}
-
-.center{text-align:center;flex:1;}
-
-.duration{font-size:13px;color:#666;margin-bottom:5px;}
-
-.line{height:1px;background:#ccc;position:relative;}
-.dot{width:6px;height:6px;background:#ccc;border-radius:50%;position:absolute;top:-3px;}
-.dot.start{left:0;}
-.dot.end{right:0;}
-.dot.middle{left:50%;transform:translateX(-50%);}
-
-.operado{font-size:13px;color:#666;margin-top:10px;}
-
-.details{
-margin-top:10px;
-display:inline-block;
-padding:6px 12px;
-border:1px solid #0b3a6f;
-border-radius:6px;
-font-size:13px;
-color:#0b3a6f;
-cursor:pointer;
-}
-
-/* RIGHT */
-.right{
-flex:1;
-border-left:1px solid #eee;
-padding:20px;
-text-align:center;
-position:relative;
-}
-
-.bar{
-height:4px;
-background:#9db7e5;
-position:absolute;
-top:0;
-width:100%;
-}
-
-.price-title{font-size:13px;color:#666;margin-top:10px;}
-.price{font-size:26px;font-weight:600;margin:5px 0;}
-.class{font-size:13px;color:#666;}
-
-.extra{
-font-size:13px;
-color:#333;
-margin-top:8px;
-}
-
-/* BOTON */
-.btn{
-margin-top:12px;
-background:#163d6b;
-color:white;
-border:none;
-padding:10px;
-border-radius:6px;
-cursor:pointer;
-width:100%;
+.route{
+font-size:22px;
 font-weight:600;
+color:#0b3a6f;
+text-align:center;
+margin-bottom:15px;
 }
 
-.btn:hover{
-background:#0d2a4a;
-}
-
-/* MODAL */
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.5);
-display:none;
-justify-content:center;
-align-items:center;
-}
-
-.modal-box{
-background:white;
-width:600px;
-max-width:95%;
-border-radius:12px;
-padding:20px;
-}
-
-.timeline{
-position:relative;
-padding-left:30px;
-}
-
-.timeline::before{
-content:"";
-position:absolute;
-left:10px;
-top:0;
-width:2px;
-height:100%;
-background:#ddd;
-}
-
-.step{
-margin-bottom:20px;
-position:relative;
-}
-
-.step::before{
-content:"";
-position:absolute;
-left:-21px;
-top:5px;
-width:10px;
-height:10px;
-background:#ccc;
-border-radius:50%;
-}
-
-.scale-box{
+.flight{
 background:#eef3fb;
 padding:12px;
 border-radius:8px;
-margin:15px 0;
-font-size:13px;
+margin-bottom:10px;
 }
 
-.close{
-float:right;
+.flighttitle{
+font-weight:600;
+margin-bottom:6px;
+color:#0b3a6f;
+}
+
+.flightline{
+font-size:14px;
+letter-spacing:0.2px;
+line-height:1.6;
+color:#333;
+}
+
+.info{
+margin-top:6px;
+font-size:14px;
+}
+
+.price{
+font-size:22px;
+font-weight:600;
+color:#0b3a6f;
+margin-top:10px;
+}
+
+.mailbtn{
+margin-top:12px;
+background:#0b3a6f;
+color:white;
+border:none;
+padding:11px;
+border-radius:7px;
 cursor:pointer;
-font-size:18px;
+width:100%;
+font-weight:600;
+transition:.25s;
+}
+
+.mailbtn:hover{
+background:#072a52;
 }
 
 </style>
@@ -205,15 +148,8 @@ font-size:18px;
 </div>
 </header>
 
-<div class="container" id="cards"></div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-<div class="modal-box">
-<span class="close" onclick="cerrarModal()">✖</span>
-<h3>Detalles de Vuelo</h3>
-<div id="detalle" class="timeline"></div>
-</div>
+<div class="container">
+<div class="grid" id="cards"></div>
 </div>
 
 <script>
@@ -224,134 +160,108 @@ fetch(CSV)
 .then(r=>r.text())
 .then(data=>{
 
-let rows=data.split("\n").slice(2).map(r=>r.split(","))
+let rows=data.split("\n").slice(2).map(r=>{
+
+let cols=r.split(",")
+
+while(cols.length<16){
+cols.push("")
+}
+
+return cols
+
+})
 
 for(let i=0;i<rows.length;i+=2){
+
 let ida=rows[i]
 let regreso=rows[i+1]
+
 if(!regreso) break
-crearCard(ida, regreso)
+
+let origen=ida[1]
+let destino=ida[2]
+
+let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
+
+let idaEscala=""
+let escalaDestino=destino
+
+if(ida[0]=="SI"){
+
+escalaDestino=ida[8]
+
+idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} | ${ida[11]}-${ida[12]}`
+
+}
+
+let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} | ${regreso[5]}-${regreso[6]}`
+
+let regresoEscala=""
+
+if(regreso[0]=="SI"){
+
+regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} | ${regreso[11]}-${regreso[12]}`
+
+}
+
+let cupos=ida[13]
+let precio=ida[14]
+let equipaje=ida[15]
+
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
+
 }
 
 })
 
-function calcularDuracion(salida, llegada){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
 
-let [h1,m1]=salida.split(":").map(Number)
-let [h2,m2]=llegada.split(":").map(Number)
+let asunto=`${origen} - ${destino}`
 
-let ini=h1*60+m1
-let fin=h2*60+m2
+let cuerpo=`Ruta: ${origen} - ${destino}
 
-if(fin<ini) fin+=1440
+IDA
+${ida}
+${idaEscala}
 
-let total=fin-ini
-let h=Math.floor(total/60)
-let m=total%60
+REGRESO
+${regreso}
+${regresoEscala}
 
-return `${h}h ${m}m`
-}
-
-function crearCard(ida, regreso){
-
-let escalaIda = ida[0]=="SI"
-let escalaReg = regreso[0]=="SI"
-
-let salidaIda = ida[5]
-let llegadaIda = escalaIda ? ida[12] : ida[6]
-
-let salidaReg = regreso[5]
-let llegadaReg = escalaReg ? regreso[12] : regreso[6]
-
-let duracionIda = calcularDuracion(salidaIda, llegadaIda)
-let duracionReg = calcularDuracion(salidaReg, llegadaReg)
+Equipaje: ${equipaje}
+Tarifa: USD ${precio}
+Cupos disponibles: ${cupos}
+`
 
 let card=`
+
 <div class="card">
 
-<div class="left">
+<img class="plane" src="avion-cupos.png">
 
-<div class="top">
-✈️ IDA • ${ida[3]} ${escalaIda ? `• Escala en ${ida[8]}` : ""}
+<div class="route">${origen} - ${destino}</div>
+
+<div class="flight">
+<div class="flighttitle">✈ IDA</div>
+<div class="flightline">${ida}</div>
+${idaEscala ? `<div class="flightline">${idaEscala}</div>`:""}
 </div>
 
-<div class="times">
-<div>
-<div class="time">${salidaIda}</div>
-<div class="city">${ida[1]}</div>
+<div class="flight">
+<div class="flighttitle">✈ REGRESO</div>
+<div class="flightline">${regreso}</div>
+${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 </div>
 
-<div class="center">
-<div class="duration">${duracionIda}</div>
-<div class="line">
-<div class="dot start"></div>
-${escalaIda ? `<div class="dot middle"></div>` : ""}
-<div class="dot end"></div>
-</div>
-</div>
+<div class="info">Equipaje: ${equipaje}</div>
+<div class="info">Cupos disponibles: ${cupos}</div>
 
-<div style="text-align:right">
-<div class="time">${llegadaIda}</div>
-<div class="city">${ida[2]}</div>
-</div>
-</div>
+<div class="price">USD ${precio}</div>
 
-<div class="operado">
-Operado por ${ida[3]} ${escalaIda ? `• ${ida[9]}` : ""}
-</div>
-
-<hr style="margin:15px 0; border:none; border-top:1px solid #eee;">
-
-<div class="top">
-🔁 REGRESO • ${regreso[3]} ${escalaReg ? `• Escala en ${regreso[8]}` : ""}
-</div>
-
-<div class="times">
-<div>
-<div class="time">${salidaReg}</div>
-<div class="city">${regreso[1]}</div>
-</div>
-
-<div class="center">
-<div class="duration">${duracionReg}</div>
-<div class="line">
-<div class="dot start"></div>
-${escalaReg ? `<div class="dot middle"></div>` : ""}
-<div class="dot end"></div>
-</div>
-</div>
-
-<div style="text-align:right">
-<div class="time">${llegadaReg}</div>
-<div class="city">${regreso[2]}</div>
-</div>
-</div>
-
-<div class="operado">
-Operado por ${regreso[3]} ${escalaReg ? `• ${regreso[9]}` : ""}
-</div>
-
-<div class="details" onclick='abrirModal(${JSON.stringify(ida)},${JSON.stringify(regreso)})'>
-Ver detalles >
-</div>
-
-</div>
-
-<div class="right">
-<div class="bar"></div>
-
-<div class="price-title">Vuelo ida y vuelta - desde</div>
-<div class="price">${ida[14]} USD</div>
-<div class="class">Económica</div>
-
-<div class="extra">🧳 ${ida[15]}</div>
-<div class="extra">🎫 ${ida[13]} cupos</div>
-
-<button class="btn" onclick="consultar('${ida[1]}-${ida[2]}', ${ida[13]}, '${ida[15]}', ${ida[14]})">
-Consultar
+<button class="mailbtn" onclick="consultar('${asunto}',\`${cuerpo}\`)">
+Consultar por Mail
 </button>
-
-</div>
 
 </div>
 `
@@ -360,56 +270,21 @@ document.getElementById("cards").innerHTML+=card
 
 }
 
-function abrirModal(ida, regreso){
+function consultar(asunto,cuerpo){
 
-let escala = ida[0]=="SI"
-let html = ""
+let cantidad=prompt("¿Cuántos cupos deseas reservar?")
 
-if(!escala){
-
-html = `
-<div class="step"><b>${ida[5]} - ${ida[1]}</b><div>${ida[3]}</div></div>
-<div class="step"><b>${ida[6]} - ${ida[2]}</b></div>
-`
-
-}else{
-
-html = `
-<div class="step"><b>${ida[5]} - ${ida[1]}</b><div>${ida[3]}</div></div>
-<div class="step"><b>${ida[6]} - ${ida[8]}</b></div>
-
-<div class="scale-box">
-Cambio de aeronave en ${ida[8]}<br>
-Escala de ${calcularDuracion(ida[6], ida[11])}
-</div>
-
-<div class="step"><b>${ida[11]} - ${ida[8]}</b><div>${ida[9]}</div></div>
-<div class="step"><b>${ida[12]} - ${ida[2]}</b></div>
-`
-}
-
-document.getElementById("detalle").innerHTML = html
-document.getElementById("modal").style.display = "flex"
-
-}
-
-function cerrarModal(){
-document.getElementById("modal").style.display="none"
-}
-
-function consultar(ruta, cupos, equipaje, precio){
-
-let cantidad = prompt(`¿Cuántos cupos deseas? (Disponibles: ${cupos})`)
 if(!cantidad) return
 
-let cuerpo = `
-Ruta: ${ruta}
+let mensaje=cuerpo + `
+
 Cupos solicitados: ${cantidad}
-Equipaje: ${equipaje}
-Tarifa: USD ${precio}
 `
 
-window.location.href = `mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=${encodeURIComponent(cuerpo)}`
+let mail=`mailto:jose@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
+
+window.location.href=mail
+
 }
 
 </script>
