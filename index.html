@@ -15,7 +15,7 @@ background:#f4f6fb;
 margin:0;
 }
 
-/* LOGIN OVERLAY */
+/* LOGIN */
 
 .login{
 position:fixed;
@@ -40,8 +40,8 @@ box-shadow:0 20px 40px rgba(0,0,0,0.2);
 }
 
 .logo{
-width:130px;
-margin-bottom:10px;
+width:140px;
+margin-bottom:15px;
 }
 
 h2{
@@ -88,13 +88,11 @@ margin-top:5px;
 display:none;
 }
 
-/* CONTENIDO OCULTO */
+/* CONTENIDO */
 
 #contenido{
 display:none;
 }
-
-/* TU DISEÑO ORIGINAL */
 
 header{
 background:#0b3a6f;
@@ -133,17 +131,11 @@ border-radius:14px;
 padding:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.08);
 transition:all .35s ease;
-animation:fadeUp .6s ease;
 }
 
 .card:hover{
 transform:translateY(-8px);
 box-shadow:0 20px 40px rgba(0,0,0,0.15);
-}
-
-@keyframes fadeUp{
-from{opacity:0;transform:translateY(20px);}
-to{opacity:1;transform:translateY(0);}
 }
 
 .plane{
@@ -178,7 +170,6 @@ color:#0b3a6f;
 .flightline{
 font-size:14px;
 line-height:1.6;
-color:#333;
 }
 
 .info{
@@ -197,16 +188,10 @@ margin-top:10px;
 margin-top:12px;
 background:#0b3a6f;
 color:white;
-border:none;
 padding:11px;
 border-radius:7px;
 cursor:pointer;
 width:100%;
-font-weight:600;
-}
-
-.mailbtn:hover{
-background:#072a52;
 }
 
 </style>
@@ -218,7 +203,9 @@ background:#072a52;
 <div class="login" id="login">
 <div class="box">
 
+<!-- 🔥 CAMBIÁ ESTE LINK POR TU LOGO REAL -->
 <img src="liberty.png" class="logo">
+
 <h2 id="titulo">Iniciar Sesión</h2>
 
 <div id="loginForm">
@@ -252,7 +239,7 @@ background:#072a52;
 
 <header>
 <div class="headerbox">
-<img src="liberty.png">
+<img src="https://drive.google.com/uc?export=view&id=TU_ID_DE_IMAGEN">
 <span>Cupos Aéreos Disponibles</span>
 </div>
 </header>
@@ -265,13 +252,14 @@ background:#072a52;
 
 <script>
 
-/* CSV USERS */
+/* URLS */
 const CSV_USERS="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?gid=305598311&single=true&output=csv"
 
-/* CSV CUPOS */
 const CSV_CUPOS="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-/* PARSER CSV */
+const API_URL="https://script.google.com/macros/s/AKfycbyiF3jTDHRcS9gNetX9Cj6ET_0tu8ef3NoQ5NapQzDYVrEmz7mIIEUa2OGcUIOV4Wd_RQ/exec"
+
+/* PARSER */
 function parseCSV(text){
 let rows=[],row=[],cur='',q=false
 for(let i=0;i<text.length;i++){
@@ -327,24 +315,35 @@ solicitudForm.style.display="none"
 titulo.innerText="Iniciar Sesión"
 }
 
-/* MAIL */
+/* 🚀 ENVIO AUTOMATICO A GOOGLE SHEETS */
 function enviarSolicitud(){
 
-let asunto="Solicitud usuario Liberty"
-
-let cuerpo=`Solicitud de acceso:
-
-Nombre: ${nombre.value}
-Apellido: ${apellido.value}
-Agencia: ${agencia.value}
-Usuario: ${newuser.value}
-Contraseña: ${newpass.value}
-`
-
-window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
+let data={
+nombre:nombre.value,
+apellido:apellido.value,
+agencia:agencia.value,
+usuario:newuser.value,
+password:newpass.value
 }
 
-/* CUPOS (tu código original) */
+fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"
+},
+body: JSON.stringify(data)
+})
+.then(()=>{
+alert("Solicitud enviada correctamente ✅")
+volverLogin()
+})
+.catch(()=>{
+alert("Error al enviar solicitud")
+})
+
+}
+
+/* CUPOS */
 function cargarCupos(){
 
 fetch(CSV_CUPOS)
