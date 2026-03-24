@@ -173,12 +173,12 @@ ${escala ? `<div class="dot middle"></div>` : ""}
 
 <div style="text-align:right">
 <div class="time">${ida[6]}</div>
-<div class="city">${ida[2]}</div>
+<div class="city">${ida[8]}</div>
 </div>
 
 </div>
 
-<div class="operado">Operado por ${ida[3]}</div>
+<div class="operado">Operado por ${ida[3]} - ${ida[9]}</div>
 
 <div class="details" onclick='abrirModal(${JSON.stringify(ida)},${JSON.stringify(regreso)})'>
 Ver detalles >
@@ -204,7 +204,7 @@ function abrirModal(ida, regreso){
 
 let escala = ida[0]=="SI" ? `
 <div class="scale-box">
-Cambio de aeronave en ${ida[8]}<br>
+Cambio de aeronave en ${ida[7]}<br>
 Escala de ${calcularDuracion(ida[6], ida[11])}
 </div>` : ""
 
