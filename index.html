@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cupos Liberty PRO</title>
+<title>Cupos Liberty</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -10,47 +10,24 @@
 
 body{
 font-family:'Inter',sans-serif;
-background:#f4f6fb;
+background:#f5f6f8;
 margin:0;
 }
 
-/* HEADER */
-header{
-background:#0b3a6f;
-padding:15px;
-color:white;
-text-align:center;
-font-weight:600;
-font-size:22px;
-}
-
-/* CONTAINER */
+/* CARD */
 .container{
 max-width:1100px;
 margin:auto;
-padding:25px;
+padding:30px;
 }
 
-/* CARD */
 .card{
 background:white;
-border-radius:12px;
+border-radius:10px;
 display:flex;
 overflow:hidden;
 margin-bottom:20px;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
-transition:.35s;
-animation:fadeUp .6s ease;
-}
-
-.card:hover{
-transform:translateY(-6px);
-box-shadow:0 20px 40px rgba(0,0,0,0.12);
-}
-
-@keyframes fadeUp{
-from{opacity:0; transform:translateY(20px);}
-to{opacity:1; transform:translateY(0);}
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
 /* LEFT */
@@ -59,26 +36,23 @@ flex:3;
 padding:20px;
 }
 
-.topline{
+.top{
+display:flex;
+align-items:center;
+gap:10px;
 font-size:13px;
 color:#666;
 margin-bottom:10px;
 }
 
-/* ROW */
-.flightrow{
+.times{
 display:flex;
 align-items:center;
 justify-content:space-between;
 }
 
-/* TIME */
-.timeblock{
-text-align:left;
-}
-
 .time{
-font-size:24px;
+font-size:22px;
 font-weight:600;
 }
 
@@ -87,45 +61,27 @@ font-size:13px;
 color:#666;
 }
 
-/* CENTER TIMELINE */
 .center{
-flex:1;
 text-align:center;
+flex:1;
 }
 
 .duration{
-font-size:12px;
+font-size:13px;
 color:#666;
 margin-bottom:5px;
 }
 
 .line{
-height:2px;
-background:#ddd;
+height:1px;
+background:#ccc;
 position:relative;
-overflow:hidden;
-}
-
-.line::after{
-content:"";
-position:absolute;
-left:0;
-top:0;
-height:100%;
-width:100%;
-background:#0b3a6f;
-animation:loadLine 2s ease;
-}
-
-@keyframes loadLine{
-from{width:0;}
-to{width:100%;}
 }
 
 .dot{
-width:8px;
-height:8px;
-background:#0b3a6f;
+width:6px;
+height:6px;
+background:#ccc;
 border-radius:50%;
 position:absolute;
 top:-3px;
@@ -134,65 +90,56 @@ top:-3px;
 .dot.start{left:0;}
 .dot.end{right:0;}
 
-.dot.middle{
-left:50%;
-transform:translateX(-50%);
-background:#0b3a6f;
+.operado{
+font-size:13px;
+color:#666;
+margin-top:10px;
+}
+
+.details{
+margin-top:8px;
+display:inline-block;
+padding:5px 10px;
+border:1px solid #0b3a6f;
+border-radius:6px;
+font-size:13px;
+color:#0b3a6f;
+cursor:pointer;
 }
 
 /* RIGHT */
 .right{
 flex:1;
 border-left:1px solid #eee;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
 padding:20px;
+text-align:center;
 position:relative;
 }
 
-.pricebar{
+.bar{
+height:4px;
+background:#9db7e5;
 position:absolute;
 top:0;
 left:0;
 width:100%;
-height:4px;
-background:#0b3a6f;
+}
+
+.price-title{
+font-size:13px;
+color:#666;
+margin-top:10px;
 }
 
 .price{
 font-size:26px;
-font-weight:700;
-color:#0b3a6f;
+font-weight:600;
+margin:5px 0;
 }
 
-.subprice{
+.class{
 font-size:13px;
 color:#666;
-margin-bottom:10px;
-}
-
-.btn{
-background:#0b3a6f;
-color:white;
-border:none;
-padding:10px 15px;
-border-radius:6px;
-cursor:pointer;
-font-weight:600;
-transition:.25s;
-}
-
-.btn:hover{
-background:#072a52;
-}
-
-.details{
-margin-top:8px;
-font-size:13px;
-color:#0b3a6f;
-cursor:pointer;
 }
 
 /* MODAL */
@@ -206,61 +153,76 @@ background:rgba(0,0,0,0.5);
 display:none;
 justify-content:center;
 align-items:center;
-animation:fadeIn .3s;
 }
 
-@keyframes fadeIn{
-from{opacity:0;}
-to{opacity:1;}
-}
-
-.modal-content{
+.modal-box{
 background:white;
+width:600px;
+max-width:95%;
 border-radius:12px;
-width:500px;
-max-width:90%;
 padding:20px;
-animation:scaleIn .3s;
 }
 
-@keyframes scaleIn{
-from{transform:scale(.9);}
-to{transform:scale(1);}
+.modal-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
 }
 
 .close{
-float:right;
 cursor:pointer;
-font-size:18px;
+font-size:20px;
 }
 
-/* TIMELINE MODAL */
+/* TIMELINE */
 .timeline{
-border-left:2px solid #ddd;
-padding-left:15px;
-margin-top:20px;
-}
-
-.stop{
-margin-bottom:20px;
 position:relative;
+padding-left:30px;
 }
 
-.stop::before{
+.timeline::before{
 content:"";
 position:absolute;
-left:-10px;
+left:10px;
+top:0;
+width:2px;
+height:100%;
+background:#ddd;
+}
+
+.step{
+position:relative;
+margin-bottom:20px;
+}
+
+.step::before{
+content:"";
+position:absolute;
+left:-21px;
 top:5px;
 width:10px;
 height:10px;
-background:#0b3a6f;
+background:#ccc;
 border-radius:50%;
 }
 
-.scale{
+.time-row{
+font-weight:600;
+}
+
+.flight{
+font-size:13px;
+color:#666;
+margin-top:4px;
+}
+
+/* ESCALA */
+.scale-box{
 background:#eef3fb;
-padding:10px;
+padding:12px;
 border-radius:8px;
+margin:15px 0;
 font-size:13px;
 }
 
@@ -269,16 +231,19 @@ font-size:13px;
 
 <body>
 
-<header>Cupos Aéreos Liberty</header>
-
 <div class="container" id="cards"></div>
 
 <!-- MODAL -->
 <div class="modal" id="modal">
-<div class="modal-content">
+<div class="modal-box">
+
+<div class="modal-header">
+<h3>Detalles de Vuelo</h3>
 <span class="close" onclick="cerrarModal()">✖</span>
-<h3>Detalles de vuelo</h3>
+</div>
+
 <div id="detalle" class="timeline"></div>
+
 </div>
 </div>
 
@@ -304,79 +269,59 @@ crearCard(ida, regreso)
 
 })
 
-function calcularDuracion(h1,h2){
-
-let [a,b]=h1.split(":").map(Number)
-let [c,d]=h2.split(":").map(Number)
-
-let inicio=a*60+b
-let fin=c*60+d
-
-if(fin<inicio) fin+=1440
-
-let total=fin-inicio
-let h=Math.floor(total/60)
-let m=total%60
-
-return `${h}h ${m}m`
-}
-
 function crearCard(ida, regreso){
-
-let origen=ida[1]
-let destino=ida[2]
 
 let salida=ida[5]
 let llegada=ida[6]
-
-let duracion=calcularDuracion(salida,llegada)
+let origen=ida[1]
+let destino=ida[2]
 
 let escala = ida[0]=="SI"
-
-let precio=ida[14]
-
-let detalle=generarDetalle(ida,regreso)
 
 let card=`
 <div class="card">
 
 <div class="left">
 
-<div class="topline">${ida[3]} • ${escala ? "1 escala" : "Directo"}</div>
+<div class="top">
+${ida[3]} ${escala ? `• Escala en ${ida[8]}` : ""}
+</div>
 
-<div class="flightrow">
+<div class="times">
 
-<div class="timeblock">
+<div>
 <div class="time">${salida}</div>
 <div class="city">${origen}</div>
 </div>
 
 <div class="center">
-<div class="duration">${duracion}</div>
-
+<div class="duration">Duración</div>
 <div class="line">
 <div class="dot start"></div>
-${escala ? `<div class="dot middle"></div>` : ""}
 <div class="dot end"></div>
 </div>
 </div>
 
-<div class="timeblock" style="text-align:right;">
+<div style="text-align:right">
 <div class="time">${llegada}</div>
 <div class="city">${destino}</div>
 </div>
 
 </div>
 
-<div class="details" onclick='abrirModal(\`${detalle}\`)'>Ver detalles</div>
+<div class="operado">Operado por ${ida[3]}</div>
+
+<div class="details" onclick='abrirModal(${JSON.stringify(ida)},${JSON.stringify(regreso)})'>
+Ver detalles >
+</div>
 
 </div>
 
 <div class="right">
-<div class="pricebar"></div>
-<div class="price">USD ${precio}</div>
-<div class="subprice">Económica</div>
-<button class="btn" onclick="consultar('${origen}-${destino}')">Consultar</button>
+<div class="bar"></div>
+<div class="price-title">Vuelo de ida - desde</div>
+<div class="price">${ida[14]} USD</div>
+<div class="class">Económica</div>
 </div>
 
 </div>
@@ -386,34 +331,44 @@ document.getElementById("cards").innerHTML+=card
 
 }
 
-function generarDetalle(ida,regreso){
+function abrirModal(ida, regreso){
 
 let escala = ida[0]=="SI" ? `
-<div class="scale">Escala en ${ida[8]}</div>` : ""
+<div class="scale-box">
+Escala en ${ida[8]}
+</div>` : ""
 
-return `
-<div class="stop"><b>${ida[5]} - ${ida[1]}</b> Vuelo ${ida[3]}</div>
-<div class="stop"><b>${ida[6]} - ${ida[2]}</b></div>
+let html=`
+
+<div class="step">
+<div class="time-row">${ida[5]} - ${ida[1]}</div>
+<div class="flight">${ida[3]}</div>
+</div>
+
+<div class="step">
+<div class="time-row">${ida[6]} - ${ida[2]}</div>
+</div>
+
 ${escala}
-<div class="stop"><b>${regreso[5]} - ${regreso[1]}</b> Vuelo ${regreso[3]}</div>
-<div class="stop"><b>${regreso[6]} - ${regreso[2]}</b></div>
+
+<div class="step">
+<div class="time-row">${regreso[5]} - ${regreso[1]}</div>
+<div class="flight">${regreso[3]}</div>
+</div>
+
+<div class="step">
+<div class="time-row">${regreso[6]} - ${regreso[2]}</div>
+</div>
+
 `
 
-}
-
-function abrirModal(html){
-document.getElementById("modal").style.display="flex"
 document.getElementById("detalle").innerHTML=html
+document.getElementById("modal").style.display="flex"
+
 }
 
 function cerrarModal(){
 document.getElementById("modal").style.display="none"
-}
-
-function consultar(ruta){
-let c=prompt("¿Cantidad de cupos?")
-if(!c) return
-window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=Cupos: ${c}`
 }
 
 </script>
