@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 <meta charset="UTF-8">
 <title>Cupos Liberty</title>
@@ -18,79 +17,140 @@ margin:0;
 header{
 background:#0b3a6f;
 padding:15px;
-}
-
-.headerbox{
-display:flex;
-align-items:center;
-justify-content:center;
-gap:15px;
 color:white;
+text-align:center;
 font-size:22px;
 font-weight:600;
 }
 
-header img{
-height:50px;
-}
-
+/* CARD */
 .container{
 max-width:1100px;
 margin:auto;
-padding:30px;
+padding:25px;
 }
 
-/* CARD estilo Copa */
 .card{
 background:white;
-border-radius:12px;
-padding:20px;
+border-radius:10px;
+display:flex;
+overflow:hidden;
 box-shadow:0 8px 20px rgba(0,0,0,0.08);
 margin-bottom:20px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-transition:.3s;
 }
 
-.card:hover{
-transform:translateY(-5px);
-box-shadow:0 15px 35px rgba(0,0,0,0.12);
-}
-
+/* LEFT */
 .left{
-flex:1;
+flex:3;
+padding:20px;
 }
 
-.route{
-font-weight:600;
-color:#0b3a6f;
-margin-bottom:8px;
+.topline{
+font-size:13px;
+color:#666;
+margin-bottom:10px;
+}
+
+.flightrow{
+display:flex;
+align-items:center;
+justify-content:space-between;
+}
+
+.timeblock{
+text-align:left;
 }
 
 .time{
-font-size:20px;
+font-size:22px;
 font-weight:600;
 }
 
-.sub{
+.city{
 font-size:13px;
 color:#666;
 }
 
+.center{
+text-align:center;
+flex:1;
+}
+
+.duration{
+font-size:13px;
+color:#666;
+margin-bottom:5px;
+}
+
+.line{
+height:2px;
+background:#ccc;
+position:relative;
+}
+
+.dot{
+width:8px;
+height:8px;
+background:#ccc;
+border-radius:50%;
+position:absolute;
+top:-3px;
+left:0;
+}
+
+.dot.end{
+left:100%;
+transform:translateX(-100%);
+}
+
+.airline{
+font-size:12px;
+color:#666;
+margin-top:10px;
+}
+
+.details{
+font-size:13px;
+color:#0b3a6f;
+cursor:pointer;
+margin-top:5px;
+display:inline-block;
+}
+
+/* RIGHT */
 .right{
-text-align:right;
-min-width:180px;
+flex:1;
+border-left:1px solid #eee;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:20px;
+position:relative;
+}
+
+.pricebar{
+position:absolute;
+top:0;
+left:0;
+height:4px;
+width:100%;
+background:#0b3a6f;
 }
 
 .price{
-font-size:26px;
+font-size:24px;
 font-weight:700;
 color:#0b3a6f;
 }
 
+.subprice{
+font-size:13px;
+color:#666;
+margin-bottom:10px;
+}
+
 .btn{
-margin-top:8px;
 background:#0b3a6f;
 color:white;
 border:none;
@@ -104,14 +164,6 @@ font-weight:600;
 background:#072a52;
 }
 
-.details{
-color:#0b3a6f;
-font-size:13px;
-cursor:pointer;
-margin-top:6px;
-display:inline-block;
-}
-
 /* MODAL */
 .modal{
 position:fixed;
@@ -123,27 +175,25 @@ background:rgba(0,0,0,0.5);
 display:none;
 justify-content:center;
 align-items:center;
-z-index:999;
 }
 
 .modal-content{
 background:white;
-border-radius:12px;
-padding:25px;
+border-radius:10px;
 width:500px;
 max-width:90%;
+padding:20px;
 }
 
 .close{
 float:right;
 cursor:pointer;
-font-size:20px;
 }
 
 .timeline{
-margin-top:20px;
 border-left:2px solid #ddd;
 padding-left:15px;
+margin-top:20px;
 }
 
 .stop{
@@ -151,8 +201,14 @@ margin-bottom:20px;
 }
 
 .stop b{
-display:block;
 color:#0b3a6f;
+}
+
+.scale{
+background:#eef3fb;
+padding:10px;
+border-radius:8px;
+font-size:13px;
 }
 
 </style>
@@ -160,12 +216,7 @@ color:#0b3a6f;
 
 <body>
 
-<header>
-<div class="headerbox">
-<img src="liberty.png">
-<span>Cupos Aéreos Disponibles</span>
-</div>
-</header>
+<header>Cupos Aéreos Liberty</header>
 
 <div class="container" id="cards"></div>
 
@@ -174,9 +225,7 @@ color:#0b3a6f;
 <div class="modal-content">
 <span class="close" onclick="cerrarModal()">✖</span>
 <h3>Detalles de Vuelo</h3>
-
-<div class="timeline" id="detalleContenido"></div>
-
+<div class="timeline" id="detalle"></div>
 </div>
 </div>
 
@@ -210,24 +259,50 @@ let destino=ida[2]
 let salida=ida[5]
 let llegada=ida[6]
 
-let duracion="Duración estimada"
+let escalaTexto = ida[0]=="SI" ? `Escala en ${ida[8]}` : "Directo"
 
 let precio=ida[14]
 
-let detalleHTML=generarDetalle(ida, regreso)
+let detalle=generarDetalle(ida, regreso)
 
 let card=`
 <div class="card">
 
 <div class="left">
-<div class="route">${origen} → ${destino}</div>
-<div class="time">${salida} - ${llegada}</div>
-<div class="sub">Operado por ${ida[3]}</div>
-<div class="details" onclick='abrirModal(\`${detalleHTML}\`)'>Ver detalles</div>
+
+<div class="topline">${ida[3]} • ${escalaTexto}</div>
+
+<div class="flightrow">
+
+<div class="timeblock">
+<div class="time">${salida}</div>
+<div class="city">${origen}</div>
+</div>
+
+<div class="center">
+<div class="duration">Duración</div>
+<div class="line">
+<div class="dot"></div>
+<div class="dot end"></div>
+</div>
+</div>
+
+<div class="timeblock" style="text-align:right;">
+<div class="time">${llegada}</div>
+<div class="city">${destino}</div>
+</div>
+
+</div>
+
+<div class="airline">Operado por ${ida[3]}</div>
+<div class="details" onclick='abrirModal(\`${detalle}\`)'>Ver detalles</div>
+
 </div>
 
 <div class="right">
+<div class="pricebar"></div>
 <div class="price">USD ${precio}</div>
+<div class="subprice">Económica</div>
 <button class="btn" onclick="consultar('${origen}-${destino}')">Consultar</button>
 </div>
 
@@ -240,7 +315,12 @@ document.getElementById("cards").innerHTML+=card
 
 function generarDetalle(ida, regreso){
 
-let html=`
+let escala = ida[0]=="SI" ? `
+<div class="scale">
+Escala en ${ida[8]}
+</div>` : ""
+
+return `
 
 <div class="stop">
 <b>${ida[5]} - ${ida[1]}</b>
@@ -250,6 +330,8 @@ Vuelo ${ida[3]}
 <div class="stop">
 <b>${ida[6]} - ${ida[2]}</b>
 </div>
+
+${escala}
 
 <div class="stop">
 <b>${regreso[5]} - ${regreso[1]}</b>
@@ -262,13 +344,11 @@ Vuelo ${regreso[3]}
 
 `
 
-return html
-
 }
 
-function abrirModal(contenido){
+function abrirModal(html){
 document.getElementById("modal").style.display="flex"
-document.getElementById("detalleContenido").innerHTML=contenido
+document.getElementById("detalle").innerHTML=html
 }
 
 function cerrarModal(){
@@ -276,15 +356,9 @@ document.getElementById("modal").style.display="none"
 }
 
 function consultar(ruta){
-
-let cantidad=prompt("¿Cuántos cupos deseas?")
-
-if(!cantidad) return
-
-let mail=`mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=Cupos solicitados: ${cantidad}`
-
-window.location.href=mail
-
+let cant=prompt("¿Cuántos cupos?")
+if(!cant) return
+window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=Cupos: ${cant}`
 }
 
 </script>
