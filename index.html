@@ -73,9 +73,9 @@ box-shadow:0 2px 10px rgba(0,0,0,0.08);
 .operado{font-size:13px;color:#666;margin-top:10px;}
 
 .details{
-margin-top:8px;
+margin-top:10px;
 display:inline-block;
-padding:5px 10px;
+padding:6px 12px;
 border:1px solid #0b3a6f;
 border-radius:6px;
 font-size:13px;
@@ -102,7 +102,6 @@ width:100%;
 
 .price-title{font-size:13px;color:#666;margin-top:10px;}
 .price{font-size:26px;font-weight:600;margin:5px 0;}
-
 .class{font-size:13px;color:#666;}
 
 .extra{
@@ -114,7 +113,7 @@ margin-top:8px;
 /* BOTON */
 .btn{
 margin-top:12px;
-background:#0b3a6f;
+background:#163d6b;
 color:white;
 border:none;
 padding:10px;
@@ -125,7 +124,7 @@ font-weight:600;
 }
 
 .btn:hover{
-background:#072a52;
+background:#0d2a4a;
 }
 
 /* MODAL */
@@ -191,6 +190,7 @@ font-size:13px;
 .close{
 float:right;
 cursor:pointer;
+font-size:18px;
 }
 
 </style>
@@ -227,13 +227,10 @@ fetch(CSV)
 let rows=data.split("\n").slice(2).map(r=>r.split(","))
 
 for(let i=0;i<rows.length;i+=2){
-
 let ida=rows[i]
 let regreso=rows[i+1]
 if(!regreso) break
-
 crearCard(ida, regreso)
-
 }
 
 })
@@ -257,12 +254,17 @@ return `${h}h ${m}m`
 
 function crearCard(ida, regreso){
 
-let escala = ida[0]=="SI"
+let escalaIda = ida[0]=="SI"
+let escalaReg = regreso[0]=="SI"
 
-let salida = ida[5]
-let llegada = escala ? ida[12] : ida[6]
+let salidaIda = ida[5]
+let llegadaIda = escalaIda ? ida[12] : ida[6]
 
-let duracion = calcularDuracion(salida, llegada)
+let salidaReg = regreso[5]
+let llegadaReg = escalaReg ? regreso[12] : regreso[6]
+
+let duracionIda = calcularDuracion(salidaIda, llegadaIda)
+let duracionReg = calcularDuracion(salidaReg, llegadaReg)
 
 let card=`
 <div class="card">
@@ -270,34 +272,63 @@ let card=`
 <div class="left">
 
 <div class="top">
-${ida[3]} ${escala ? `• Escala en ${ida[8]}` : ""}
+✈️ IDA • ${ida[3]} ${escalaIda ? `• Escala en ${ida[8]}` : ""}
 </div>
 
 <div class="times">
-
 <div>
-<div class="time">${salida}</div>
+<div class="time">${salidaIda}</div>
 <div class="city">${ida[1]}</div>
 </div>
 
 <div class="center">
-<div class="duration">${duracion}</div>
+<div class="duration">${duracionIda}</div>
 <div class="line">
 <div class="dot start"></div>
-${escala ? `<div class="dot middle"></div>` : ""}
+${escalaIda ? `<div class="dot middle"></div>` : ""}
 <div class="dot end"></div>
 </div>
 </div>
 
 <div style="text-align:right">
-<div class="time">${llegada}</div>
+<div class="time">${llegadaIda}</div>
 <div class="city">${ida[2]}</div>
 </div>
-
 </div>
 
 <div class="operado">
-Operado por ${ida[3]} ${escala ? `• ${ida[9]}` : ""}
+Operado por ${ida[3]} ${escalaIda ? `• ${ida[9]}` : ""}
+</div>
+
+<hr style="margin:15px 0; border:none; border-top:1px solid #eee;">
+
+<div class="top">
+🔁 REGRESO • ${regreso[3]} ${escalaReg ? `• Escala en ${regreso[8]}` : ""}
+</div>
+
+<div class="times">
+<div>
+<div class="time">${salidaReg}</div>
+<div class="city">${regreso[1]}</div>
+</div>
+
+<div class="center">
+<div class="duration">${duracionReg}</div>
+<div class="line">
+<div class="dot start"></div>
+${escalaReg ? `<div class="dot middle"></div>` : ""}
+<div class="dot end"></div>
+</div>
+</div>
+
+<div style="text-align:right">
+<div class="time">${llegadaReg}</div>
+<div class="city">${regreso[2]}</div>
+</div>
+</div>
+
+<div class="operado">
+Operado por ${regreso[3]} ${escalaReg ? `• ${regreso[9]}` : ""}
 </div>
 
 <div class="details" onclick='abrirModal(${JSON.stringify(ida)},${JSON.stringify(regreso)})'>
@@ -309,7 +340,7 @@ Ver detalles >
 <div class="right">
 <div class="bar"></div>
 
-<div class="price-title">Vuelo de ida - desde</div>
+<div class="price-title">Vuelo ida y vuelta - desde</div>
 <div class="price">${ida[14]} USD</div>
 <div class="class">Económica</div>
 
@@ -332,47 +363,28 @@ document.getElementById("cards").innerHTML+=card
 function abrirModal(ida, regreso){
 
 let escala = ida[0]=="SI"
-
 let html = ""
 
 if(!escala){
 
 html = `
-<div class="step">
-<b>${ida[5]} - ${ida[1]}</b>
-<div>${ida[3]}</div>
-</div>
-
-<div class="step">
-<b>${ida[6]} - ${ida[2]}</b>
-</div>
+<div class="step"><b>${ida[5]} - ${ida[1]}</b><div>${ida[3]}</div></div>
+<div class="step"><b>${ida[6]} - ${ida[2]}</b></div>
 `
 
 }else{
 
 html = `
-<div class="step">
-<b>${ida[5]} - ${ida[1]}</b>
-<div>${ida[3]}</div>
-</div>
-
-<div class="step">
-<b>${ida[6]} - ${ida[8]}</b>
-</div>
+<div class="step"><b>${ida[5]} - ${ida[1]}</b><div>${ida[3]}</div></div>
+<div class="step"><b>${ida[6]} - ${ida[8]}</b></div>
 
 <div class="scale-box">
 Cambio de aeronave en ${ida[8]}<br>
 Escala de ${calcularDuracion(ida[6], ida[11])}
 </div>
 
-<div class="step">
-<b>${ida[11]} - ${ida[8]}</b>
-<div>${ida[9]}</div>
-</div>
-
-<div class="step">
-<b>${ida[12]} - ${ida[2]}</b>
-</div>
+<div class="step"><b>${ida[11]} - ${ida[8]}</b><div>${ida[9]}</div></div>
+<div class="step"><b>${ida[12]} - ${ida[2]}</b></div>
 `
 }
 
@@ -388,7 +400,6 @@ document.getElementById("modal").style.display="none"
 function consultar(ruta, cupos, equipaje, precio){
 
 let cantidad = prompt(`¿Cuántos cupos deseas? (Disponibles: ${cupos})`)
-
 if(!cantidad) return
 
 let cuerpo = `
@@ -399,7 +410,6 @@ Tarifa: USD ${precio}
 `
 
 window.location.href = `mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=${encodeURIComponent(cuerpo)}`
-
 }
 
 </script>
