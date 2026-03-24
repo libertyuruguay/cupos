@@ -15,6 +15,85 @@ background:#f4f6fb;
 margin:0;
 }
 
+/* LOGIN */
+
+.login{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#0b3a6f;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.box{
+background:white;
+padding:35px;
+border-radius:14px;
+width:320px;
+text-align:center;
+box-shadow:0 20px 40px rgba(0,0,0,0.2);
+}
+
+.logo{
+width:140px;
+margin-bottom:15px;
+}
+
+h2{
+color:#0b3a6f;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:11px;
+border:none;
+border-radius:7px;
+cursor:pointer;
+font-weight:600;
+}
+
+.loginbtn{
+background:#0b3a6f;
+color:white;
+}
+
+.secbtn{
+margin-top:10px;
+background:#eef3fb;
+color:#0b3a6f;
+}
+
+.error{
+color:red;
+font-size:13px;
+display:none;
+margin-top:5px;
+}
+
+.form{
+display:none;
+}
+
+/* CONTENIDO */
+
+#contenido{
+display:none;
+}
+
 header{
 background:#0b3a6f;
 padding:15px;
@@ -51,24 +130,12 @@ background:white;
 border-radius:14px;
 padding:20px;
 box-shadow:0 10px 25px rgba(0,0,0,0.08);
-transition:all .35s ease;
-animation:fadeUp .6s ease;
+transition:.3s;
 }
 
 .card:hover{
 transform:translateY(-8px);
 box-shadow:0 20px 40px rgba(0,0,0,0.15);
-}
-
-@keyframes fadeUp{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
 }
 
 .plane{
@@ -102,9 +169,7 @@ color:#0b3a6f;
 
 .flightline{
 font-size:14px;
-letter-spacing:0.2px;
 line-height:1.6;
-color:#333;
 }
 
 .info{
@@ -123,23 +188,54 @@ margin-top:10px;
 margin-top:12px;
 background:#0b3a6f;
 color:white;
-border:none;
 padding:11px;
 border-radius:7px;
 cursor:pointer;
 width:100%;
-font-weight:600;
-transition:.25s;
-}
-
-.mailbtn:hover{
-background:#072a52;
 }
 
 </style>
 </head>
 
 <body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+<div class="box">
+
+<!-- 🔥 CAMBIAR POR TU LOGO -->
+<img src="Liberty-01.png" class="logo">
+
+<h2 id="titulo">Iniciar Sesión</h2>
+
+<div id="loginForm">
+<input type="text" id="user" placeholder="Usuario">
+<input type="password" id="pass" placeholder="Contraseña">
+
+<button class="loginbtn" onclick="login()">Ingresar</button>
+<button class="secbtn" onclick="mostrarSolicitud()">Solicitar usuario</button>
+
+<div class="error" id="error">Datos incorrectos</div>
+</div>
+
+<div class="form" id="solicitudForm">
+
+<input type="text" id="nombre" placeholder="Nombre">
+<input type="text" id="apellido" placeholder="Apellido">
+<input type="text" id="agencia" placeholder="Agencia">
+<input type="text" id="newuser" placeholder="Usuario">
+<input type="password" id="newpass" placeholder="Contraseña">
+
+<button class="loginbtn" onclick="enviarSolicitud()">Enviar solicitud</button>
+<button class="secbtn" onclick="volverLogin()">Volver</button>
+
+</div>
+
+</div>
+</div>
+
+<!-- CONTENIDO -->
+<div id="contenido">
 
 <header>
 <div class="headerbox">
@@ -152,68 +248,147 @@ background:#072a52;
 <div class="grid" id="cards"></div>
 </div>
 
+</div>
+
 <script>
 
-const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+/* URLS */
+const CSV_USERS="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?gid=305598311&single=true&output=csv"
 
-fetch(CSV)
+const CSV_CUPOS="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
+
+const API_URL="https://script.google.com/macros/s/AKfycbyiF3jTDHRcS9gNetX9Cj6ET_0tu8ef3NoQ5NapQzDYVrEmz7mIIEUa2OGcUIOV4Wd_RQ/exec"
+
+/* PARSER CSV */
+function parseCSV(text){
+let rows=[],row=[],cur='',q=false
+for(let i=0;i<text.length;i++){
+let c=text[i],n=text[i+1]
+if(c=='"'&&q&&n=='"'){cur+='"';i++}
+else if(c=='"'){q=!q}
+else if(c==','&&!q){row.push(cur);cur=''}
+else if((c=='\n'||c=='\r')&&!q){
+if(cur||row.length){row.push(cur);rows.push(row);row=[];cur=''}
+}else{cur+=c}
+}
+if(cur)row.push(cur)
+if(row.length)rows.push(row)
+return rows
+}
+
+/* LOGIN */
+async function login(){
+
+let u = document.getElementById("user").value.trim().toLowerCase()
+let p = document.getElementById("pass").value.trim()
+
+let res = await fetch(CSV_USERS)
+let data = await res.text()
+let rows = parseCSV(data).slice(1)
+
+let ok=false
+
+rows.forEach(c=>{
+let usuario=(c[3]||"").trim().toLowerCase()
+let password=(c[4]||"").trim()
+
+if(u===usuario && p===password){
+ok=true
+}
+})
+
+if(ok){
+document.getElementById("login").style.display="none"
+document.getElementById("contenido").style.display="block"
+cargarCupos()
+}else{
+document.getElementById("error").style.display="block"
+}
+
+}
+
+/* UI */
+function mostrarSolicitud(){
+loginForm.style.display="none"
+solicitudForm.style.display="block"
+titulo.innerText="Solicitar Usuario"
+}
+
+function volverLogin(){
+loginForm.style.display="block"
+solicitudForm.style.display="none"
+titulo.innerText="Iniciar Sesión"
+}
+
+/* SOLICITUD AUTOMÁTICA */
+function enviarSolicitud(){
+
+let data={
+nombre:nombre.value,
+apellido:apellido.value,
+agencia:agencia.value,
+usuario:newuser.value,
+password:newpass.value
+}
+
+fetch(API_URL,{
+method:"POST",
+headers:{
+"Content-Type":"text/plain;charset=utf-8"
+},
+body: JSON.stringify(data)
+})
+.then(()=>{
+alert("Solicitud enviada correctamente ✅")
+volverLogin()
+})
+.catch(()=>{
+alert("Error al enviar solicitud")
+})
+
+}
+
+/* CUPOS */
+function cargarCupos(){
+
+fetch(CSV_CUPOS)
 .then(r=>r.text())
 .then(data=>{
 
-let rows=data.split("\n").slice(2).map(r=>{
-
-let cols=r.split(",")
-
-while(cols.length<16){
-cols.push("")
-}
-
-return cols
-
-})
+let rows=parseCSV(data).slice(2)
 
 for(let i=0;i<rows.length;i+=2){
 
 let ida=rows[i]
 let regreso=rows[i+1]
-
 if(!regreso) break
 
 let origen=ida[1]
 let destino=ida[2]
 
 let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida[6]}`
-
 let idaEscala=""
 let escalaDestino=destino
 
 if(ida[0]=="SI"){
-
 escalaDestino=ida[8]
-
 idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} | ${ida[11]}-${ida[12]}`
-
 }
 
 let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} | ${regreso[5]}-${regreso[6]}`
-
 let regresoEscala=""
 
 if(regreso[0]=="SI"){
-
 regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} | ${regreso[11]}-${regreso[12]}`
-
 }
 
-let cupos=ida[13]
-let precio=ida[14]
-let equipaje=ida[15]
-
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,ida[13],ida[14],ida[15])
 
 }
 
 })
+
+}
 
 function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
 
@@ -234,12 +409,9 @@ Tarifa: USD ${precio}
 Cupos disponibles: ${cupos}
 `
 
-let card=`
-
+cards.innerHTML+=`
 <div class="card">
-
 <img class="plane" src="avion-cupos.png">
-
 <div class="route">${origen} - ${destino}</div>
 
 <div class="flight">
@@ -263,28 +435,17 @@ ${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 Consultar por Mail
 </button>
 
-</div>
-`
-
-document.getElementById("cards").innerHTML+=card
-
+</div>`
 }
 
 function consultar(asunto,cuerpo){
 
 let cantidad=prompt("¿Cuántos cupos deseas reservar?")
-
 if(!cantidad) return
 
-let mensaje=cuerpo + `
+let mensaje=cuerpo + `\n\nCupos solicitados: ${cantidad}`
 
-Cupos solicitados: ${cantidad}
-`
-
-let mail=`mailto:jose@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
-
-window.location.href=mail
-
+window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
 }
 
 </script>
