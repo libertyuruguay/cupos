@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Cupos Liberty</title>
+<title>Cupos Liberty PRO</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
@@ -14,29 +14,43 @@ background:#f4f6fb;
 margin:0;
 }
 
+/* HEADER */
 header{
 background:#0b3a6f;
 padding:15px;
 color:white;
 text-align:center;
-font-size:22px;
 font-weight:600;
+font-size:22px;
 }
 
-/* CARD */
+/* CONTAINER */
 .container{
 max-width:1100px;
 margin:auto;
 padding:25px;
 }
 
+/* CARD */
 .card{
 background:white;
-border-radius:10px;
+border-radius:12px;
 display:flex;
 overflow:hidden;
-box-shadow:0 8px 20px rgba(0,0,0,0.08);
 margin-bottom:20px;
+box-shadow:0 8px 20px rgba(0,0,0,0.08);
+transition:.35s;
+animation:fadeUp .6s ease;
+}
+
+.card:hover{
+transform:translateY(-6px);
+box-shadow:0 20px 40px rgba(0,0,0,0.12);
+}
+
+@keyframes fadeUp{
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
 }
 
 /* LEFT */
@@ -51,18 +65,20 @@ color:#666;
 margin-bottom:10px;
 }
 
+/* ROW */
 .flightrow{
 display:flex;
 align-items:center;
 justify-content:space-between;
 }
 
+/* TIME */
 .timeblock{
 text-align:left;
 }
 
 .time{
-font-size:22px;
+font-size:24px;
 font-weight:600;
 }
 
@@ -71,50 +87,57 @@ font-size:13px;
 color:#666;
 }
 
+/* CENTER TIMELINE */
 .center{
-text-align:center;
 flex:1;
+text-align:center;
 }
 
 .duration{
-font-size:13px;
+font-size:12px;
 color:#666;
 margin-bottom:5px;
 }
 
 .line{
 height:2px;
-background:#ccc;
+background:#ddd;
 position:relative;
+overflow:hidden;
+}
+
+.line::after{
+content:"";
+position:absolute;
+left:0;
+top:0;
+height:100%;
+width:100%;
+background:#0b3a6f;
+animation:loadLine 2s ease;
+}
+
+@keyframes loadLine{
+from{width:0;}
+to{width:100%;}
 }
 
 .dot{
 width:8px;
 height:8px;
-background:#ccc;
+background:#0b3a6f;
 border-radius:50%;
 position:absolute;
 top:-3px;
-left:0;
 }
 
-.dot.end{
-left:100%;
-transform:translateX(-100%);
-}
+.dot.start{left:0;}
+.dot.end{right:0;}
 
-.airline{
-font-size:12px;
-color:#666;
-margin-top:10px;
-}
-
-.details{
-font-size:13px;
-color:#0b3a6f;
-cursor:pointer;
-margin-top:5px;
-display:inline-block;
+.dot.middle{
+left:50%;
+transform:translateX(-50%);
+background:#0b3a6f;
 }
 
 /* RIGHT */
@@ -123,8 +146,8 @@ flex:1;
 border-left:1px solid #eee;
 display:flex;
 flex-direction:column;
-justify-content:center;
 align-items:center;
+justify-content:center;
 padding:20px;
 position:relative;
 }
@@ -133,13 +156,13 @@ position:relative;
 position:absolute;
 top:0;
 left:0;
-height:4px;
 width:100%;
+height:4px;
 background:#0b3a6f;
 }
 
 .price{
-font-size:24px;
+font-size:26px;
 font-weight:700;
 color:#0b3a6f;
 }
@@ -154,14 +177,22 @@ margin-bottom:10px;
 background:#0b3a6f;
 color:white;
 border:none;
-padding:10px 14px;
+padding:10px 15px;
 border-radius:6px;
 cursor:pointer;
 font-weight:600;
+transition:.25s;
 }
 
 .btn:hover{
 background:#072a52;
+}
+
+.details{
+margin-top:8px;
+font-size:13px;
+color:#0b3a6f;
+cursor:pointer;
 }
 
 /* MODAL */
@@ -175,21 +206,35 @@ background:rgba(0,0,0,0.5);
 display:none;
 justify-content:center;
 align-items:center;
+animation:fadeIn .3s;
+}
+
+@keyframes fadeIn{
+from{opacity:0;}
+to{opacity:1;}
 }
 
 .modal-content{
 background:white;
-border-radius:10px;
+border-radius:12px;
 width:500px;
 max-width:90%;
 padding:20px;
+animation:scaleIn .3s;
+}
+
+@keyframes scaleIn{
+from{transform:scale(.9);}
+to{transform:scale(1);}
 }
 
 .close{
 float:right;
 cursor:pointer;
+font-size:18px;
 }
 
+/* TIMELINE MODAL */
 .timeline{
 border-left:2px solid #ddd;
 padding-left:15px;
@@ -198,10 +243,18 @@ margin-top:20px;
 
 .stop{
 margin-bottom:20px;
+position:relative;
 }
 
-.stop b{
-color:#0b3a6f;
+.stop::before{
+content:"";
+position:absolute;
+left:-10px;
+top:5px;
+width:10px;
+height:10px;
+background:#0b3a6f;
+border-radius:50%;
 }
 
 .scale{
@@ -224,8 +277,8 @@ font-size:13px;
 <div class="modal" id="modal">
 <div class="modal-content">
 <span class="close" onclick="cerrarModal()">✖</span>
-<h3>Detalles de Vuelo</h3>
-<div class="timeline" id="detalle"></div>
+<h3>Detalles de vuelo</h3>
+<div id="detalle" class="timeline"></div>
 </div>
 </div>
 
@@ -251,6 +304,23 @@ crearCard(ida, regreso)
 
 })
 
+function calcularDuracion(h1,h2){
+
+let [a,b]=h1.split(":").map(Number)
+let [c,d]=h2.split(":").map(Number)
+
+let inicio=a*60+b
+let fin=c*60+d
+
+if(fin<inicio) fin+=1440
+
+let total=fin-inicio
+let h=Math.floor(total/60)
+let m=total%60
+
+return `${h}h ${m}m`
+}
+
 function crearCard(ida, regreso){
 
 let origen=ida[1]
@@ -259,18 +329,20 @@ let destino=ida[2]
 let salida=ida[5]
 let llegada=ida[6]
 
-let escalaTexto = ida[0]=="SI" ? `Escala en ${ida[8]}` : "Directo"
+let duracion=calcularDuracion(salida,llegada)
+
+let escala = ida[0]=="SI"
 
 let precio=ida[14]
 
-let detalle=generarDetalle(ida, regreso)
+let detalle=generarDetalle(ida,regreso)
 
 let card=`
 <div class="card">
 
 <div class="left">
 
-<div class="topline">${ida[3]} • ${escalaTexto}</div>
+<div class="topline">${ida[3]} • ${escala ? "1 escala" : "Directo"}</div>
 
 <div class="flightrow">
 
@@ -280,9 +352,11 @@ let card=`
 </div>
 
 <div class="center">
-<div class="duration">Duración</div>
+<div class="duration">${duracion}</div>
+
 <div class="line">
-<div class="dot"></div>
+<div class="dot start"></div>
+${escala ? `<div class="dot middle"></div>` : ""}
 <div class="dot end"></div>
 </div>
 </div>
@@ -294,7 +368,6 @@ let card=`
 
 </div>
 
-<div class="airline">Operado por ${ida[3]}</div>
 <div class="details" onclick='abrirModal(\`${detalle}\`)'>Ver detalles</div>
 
 </div>
@@ -313,35 +386,17 @@ document.getElementById("cards").innerHTML+=card
 
 }
 
-function generarDetalle(ida, regreso){
+function generarDetalle(ida,regreso){
 
 let escala = ida[0]=="SI" ? `
-<div class="scale">
-Escala en ${ida[8]}
-</div>` : ""
+<div class="scale">Escala en ${ida[8]}</div>` : ""
 
 return `
-
-<div class="stop">
-<b>${ida[5]} - ${ida[1]}</b>
-Vuelo ${ida[3]}
-</div>
-
-<div class="stop">
-<b>${ida[6]} - ${ida[2]}</b>
-</div>
-
+<div class="stop"><b>${ida[5]} - ${ida[1]}</b> Vuelo ${ida[3]}</div>
+<div class="stop"><b>${ida[6]} - ${ida[2]}</b></div>
 ${escala}
-
-<div class="stop">
-<b>${regreso[5]} - ${regreso[1]}</b>
-Vuelo ${regreso[3]}
-</div>
-
-<div class="stop">
-<b>${regreso[6]} - ${regreso[2]}</b>
-</div>
-
+<div class="stop"><b>${regreso[5]} - ${regreso[1]}</b> Vuelo ${regreso[3]}</div>
+<div class="stop"><b>${regreso[6]} - ${regreso[2]}</b></div>
 `
 
 }
@@ -356,9 +411,9 @@ document.getElementById("modal").style.display="none"
 }
 
 function consultar(ruta){
-let cant=prompt("¿Cuántos cupos?")
-if(!cant) return
-window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=Cupos: ${cant}`
+let c=prompt("¿Cantidad de cupos?")
+if(!c) return
+window.location.href=`mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=Cupos: ${c}`
 }
 
 </script>
