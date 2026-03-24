@@ -7,94 +7,33 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-
-body{
-font-family:'Inter',sans-serif;
-background:#f5f6f8;
-margin:0;
-}
-
-/* CARD */
-.container{
-max-width:1100px;
-margin:auto;
-padding:30px;
-}
+body{font-family:'Inter',sans-serif;background:#f5f6f8;margin:0;}
+.container{max-width:1100px;margin:auto;padding:30px;}
 
 .card{
-background:white;
-border-radius:10px;
-display:flex;
-overflow:hidden;
-margin-bottom:20px;
-box-shadow:0 2px 10px rgba(0,0,0,0.08);
+background:white;border-radius:10px;display:flex;
+margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
-/* LEFT */
-.left{
-flex:3;
-padding:20px;
-}
+.left{flex:3;padding:20px;}
 
-.top{
-display:flex;
-align-items:center;
-gap:10px;
-font-size:13px;
-color:#666;
-margin-bottom:10px;
-}
+.top{font-size:13px;color:#666;margin-bottom:10px;}
 
-.times{
-display:flex;
-align-items:center;
-justify-content:space-between;
-}
+.times{display:flex;justify-content:space-between;align-items:center;}
 
-.time{
-font-size:22px;
-font-weight:600;
-}
+.time{font-size:22px;font-weight:600;}
+.city{font-size:13px;color:#666;}
 
-.city{
-font-size:13px;
-color:#666;
-}
+.center{text-align:center;flex:1;}
+.duration{font-size:13px;color:#666;margin-bottom:5px;}
 
-.center{
-text-align:center;
-flex:1;
-}
-
-.duration{
-font-size:13px;
-color:#666;
-margin-bottom:5px;
-}
-
-.line{
-height:1px;
-background:#ccc;
-position:relative;
-}
-
-.dot{
-width:6px;
-height:6px;
-background:#ccc;
-border-radius:50%;
-position:absolute;
-top:-3px;
-}
-
+.line{height:1px;background:#ccc;position:relative;}
+.dot{width:6px;height:6px;background:#ccc;border-radius:50%;position:absolute;top:-3px;}
 .dot.start{left:0;}
 .dot.end{right:0;}
+.dot.middle{left:50%;transform:translateX(-50%);}
 
-.operado{
-font-size:13px;
-color:#666;
-margin-top:10px;
-}
+.operado{font-size:13px;color:#666;margin-top:10px;}
 
 .details{
 margin-top:8px;
@@ -107,125 +46,46 @@ color:#0b3a6f;
 cursor:pointer;
 }
 
-/* RIGHT */
 .right{
-flex:1;
-border-left:1px solid #eee;
-padding:20px;
-text-align:center;
-position:relative;
+flex:1;border-left:1px solid #eee;padding:20px;
+text-align:center;position:relative;
 }
 
-.bar{
-height:4px;
-background:#9db7e5;
-position:absolute;
-top:0;
-left:0;
-width:100%;
-}
-
-.price-title{
-font-size:13px;
-color:#666;
-margin-top:10px;
-}
-
-.price{
-font-size:26px;
-font-weight:600;
-margin:5px 0;
-}
-
-.class{
-font-size:13px;
-color:#666;
-}
+.bar{height:4px;background:#9db7e5;position:absolute;top:0;width:100%;}
+.price-title{font-size:13px;color:#666;margin-top:10px;}
+.price{font-size:26px;font-weight:600;margin:5px 0;}
+.class{font-size:13px;color:#666;}
 
 /* MODAL */
 .modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
+position:fixed;top:0;left:0;width:100%;height:100%;
 background:rgba(0,0,0,0.5);
-display:none;
-justify-content:center;
-align-items:center;
+display:none;justify-content:center;align-items:center;
 }
 
 .modal-box{
-background:white;
-width:600px;
-max-width:95%;
-border-radius:12px;
-padding:20px;
+background:white;width:600px;max-width:95%;
+border-radius:12px;padding:20px;
 }
 
-.modal-header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:15px;
-}
-
-.close{
-cursor:pointer;
-font-size:20px;
-}
-
-/* TIMELINE */
-.timeline{
-position:relative;
-padding-left:30px;
-}
-
+.timeline{position:relative;padding-left:30px;}
 .timeline::before{
-content:"";
-position:absolute;
-left:10px;
-top:0;
-width:2px;
-height:100%;
-background:#ddd;
+content:"";position:absolute;left:10px;top:0;
+width:2px;height:100%;background:#ddd;
 }
 
-.step{
-position:relative;
-margin-bottom:20px;
-}
-
+.step{margin-bottom:20px;position:relative;}
 .step::before{
-content:"";
-position:absolute;
-left:-21px;
-top:5px;
-width:10px;
-height:10px;
-background:#ccc;
-border-radius:50%;
+content:"";position:absolute;left:-21px;top:5px;
+width:10px;height:10px;background:#ccc;border-radius:50%;
 }
 
-.time-row{
-font-weight:600;
-}
-
-.flight{
-font-size:13px;
-color:#666;
-margin-top:4px;
-}
-
-/* ESCALA */
 .scale-box{
-background:#eef3fb;
-padding:12px;
-border-radius:8px;
-margin:15px 0;
+background:#eef3fb;padding:12px;border-radius:8px;margin:15px 0;
 font-size:13px;
 }
 
+.close{float:right;cursor:pointer;}
 </style>
 </head>
 
@@ -233,17 +93,11 @@ font-size:13px;
 
 <div class="container" id="cards"></div>
 
-<!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-box">
-
-<div class="modal-header">
-<h3>Detalles de Vuelo</h3>
 <span class="close" onclick="cerrarModal()">✖</span>
-</div>
-
+<h3>Detalles de Vuelo</h3>
 <div id="detalle" class="timeline"></div>
-
 </div>
 </div>
 
@@ -269,14 +123,28 @@ crearCard(ida, regreso)
 
 })
 
+function calcularDuracion(salida, llegada){
+
+let [h1,m1]=salida.split(":").map(Number)
+let [h2,m2]=llegada.split(":").map(Number)
+
+let ini=h1*60+m1
+let fin=h2*60+m2
+
+if(fin<ini) fin+=1440
+
+let total=fin-ini
+let h=Math.floor(total/60)
+let m=total%60
+
+return `${h}h ${m}m`
+}
+
 function crearCard(ida, regreso){
 
-let salida=ida[5]
-let llegada=ida[6]
-let origen=ida[1]
-let destino=ida[2]
-
 let escala = ida[0]=="SI"
+
+let duracion=calcularDuracion(ida[5], ida[6])
 
 let card=`
 <div class="card">
@@ -290,21 +158,22 @@ ${ida[3]} ${escala ? `• Escala en ${ida[8]}` : ""}
 <div class="times">
 
 <div>
-<div class="time">${salida}</div>
-<div class="city">${origen}</div>
+<div class="time">${ida[5]}</div>
+<div class="city">${ida[1]}</div>
 </div>
 
 <div class="center">
-<div class="duration">Duración</div>
+<div class="duration">${duracion}</div>
 <div class="line">
 <div class="dot start"></div>
+${escala ? `<div class="dot middle"></div>` : ""}
 <div class="dot end"></div>
 </div>
 </div>
 
 <div style="text-align:right">
-<div class="time">${llegada}</div>
-<div class="city">${destino}</div>
+<div class="time">${ida[6]}</div>
+<div class="city">${ida[2]}</div>
 </div>
 
 </div>
@@ -335,30 +204,33 @@ function abrirModal(ida, regreso){
 
 let escala = ida[0]=="SI" ? `
 <div class="scale-box">
-Escala en ${ida[8]}
+Cambio de aeronave en ${ida[8]}<br>
+Escala de ${calcularDuracion(ida[6], ida[11])}
 </div>` : ""
 
 let html=`
 
 <div class="step">
-<div class="time-row">${ida[5]} - ${ida[1]}</div>
-<div class="flight">${ida[3]}</div>
+<b>${ida[5]} - ${ida[1]}</b>
+<div>${ida[3]}</div>
 </div>
 
 <div class="step">
-<div class="time-row">${ida[6]} - ${ida[2]}</div>
+<b>${ida[6]} - ${ida[8] || ida[2]}</b>
 </div>
 
 ${escala}
 
+${ida[0]=="SI" ? `
 <div class="step">
-<div class="time-row">${regreso[5]} - ${regreso[1]}</div>
-<div class="flight">${regreso[3]}</div>
+<b>${ida[11]} - ${ida[8]}</b>
+<div>${ida[9]}</div>
 </div>
 
 <div class="step">
-<div class="time-row">${regreso[6]} - ${regreso[2]}</div>
+<b>${ida[12]} - ${ida[2]}</b>
 </div>
+` : ""}
 
 `
 
