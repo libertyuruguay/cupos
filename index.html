@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
 <meta charset="UTF-8">
 <title>Cupos Liberty</title>
@@ -7,12 +8,47 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-body{font-family:'Inter',sans-serif;background:#f5f6f8;margin:0;}
-.container{max-width:1100px;margin:auto;padding:30px;}
 
+body{
+font-family:'Inter',sans-serif;
+background:#f5f6f8;
+margin:0;
+}
+
+/* HEADER */
+header{
+background:#0b3a6f;
+padding:15px;
+}
+
+.headerbox{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:15px;
+color:white;
+font-size:22px;
+font-weight:600;
+}
+
+header img{
+height:50px;
+}
+
+/* CONTAINER */
+.container{
+max-width:1100px;
+margin:auto;
+padding:30px;
+}
+
+/* CARD */
 .card{
-background:white;border-radius:10px;display:flex;
-margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);
+background:white;
+border-radius:10px;
+display:flex;
+margin-bottom:20px;
+box-shadow:0 2px 10px rgba(0,0,0,0.08);
 }
 
 .left{flex:3;padding:20px;}
@@ -25,6 +61,7 @@ margin-bottom:20px;box-shadow:0 2px 10px rgba(0,0,0,0.08);
 .city{font-size:13px;color:#666;}
 
 .center{text-align:center;flex:1;}
+
 .duration{font-size:13px;color:#666;margin-bottom:5px;}
 
 .line{height:1px;background:#ccc;position:relative;}
@@ -46,53 +83,131 @@ color:#0b3a6f;
 cursor:pointer;
 }
 
+/* RIGHT */
 .right{
-flex:1;border-left:1px solid #eee;padding:20px;
-text-align:center;position:relative;
+flex:1;
+border-left:1px solid #eee;
+padding:20px;
+text-align:center;
+position:relative;
 }
 
-.bar{height:4px;background:#9db7e5;position:absolute;top:0;width:100%;}
+.bar{
+height:4px;
+background:#9db7e5;
+position:absolute;
+top:0;
+width:100%;
+}
+
 .price-title{font-size:13px;color:#666;margin-top:10px;}
 .price{font-size:26px;font-weight:600;margin:5px 0;}
+
 .class{font-size:13px;color:#666;}
+
+.extra{
+font-size:13px;
+color:#333;
+margin-top:8px;
+}
+
+/* BOTON */
+.btn{
+margin-top:12px;
+background:#0b3a6f;
+color:white;
+border:none;
+padding:10px;
+border-radius:6px;
+cursor:pointer;
+width:100%;
+font-weight:600;
+}
+
+.btn:hover{
+background:#072a52;
+}
 
 /* MODAL */
 .modal{
-position:fixed;top:0;left:0;width:100%;height:100%;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
 background:rgba(0,0,0,0.5);
-display:none;justify-content:center;align-items:center;
+display:none;
+justify-content:center;
+align-items:center;
 }
 
 .modal-box{
-background:white;width:600px;max-width:95%;
-border-radius:12px;padding:20px;
+background:white;
+width:600px;
+max-width:95%;
+border-radius:12px;
+padding:20px;
 }
 
-.timeline{position:relative;padding-left:30px;}
+.timeline{
+position:relative;
+padding-left:30px;
+}
+
 .timeline::before{
-content:"";position:absolute;left:10px;top:0;
-width:2px;height:100%;background:#ddd;
+content:"";
+position:absolute;
+left:10px;
+top:0;
+width:2px;
+height:100%;
+background:#ddd;
 }
 
-.step{margin-bottom:20px;position:relative;}
+.step{
+margin-bottom:20px;
+position:relative;
+}
+
 .step::before{
-content:"";position:absolute;left:-21px;top:5px;
-width:10px;height:10px;background:#ccc;border-radius:50%;
+content:"";
+position:absolute;
+left:-21px;
+top:5px;
+width:10px;
+height:10px;
+background:#ccc;
+border-radius:50%;
 }
 
 .scale-box{
-background:#eef3fb;padding:12px;border-radius:8px;margin:15px 0;
+background:#eef3fb;
+padding:12px;
+border-radius:8px;
+margin:15px 0;
 font-size:13px;
 }
 
-.close{float:right;cursor:pointer;}
+.close{
+float:right;
+cursor:pointer;
+}
+
 </style>
 </head>
 
 <body>
 
+<header>
+<div class="headerbox">
+<img src="liberty.png">
+<span>Cupos Aéreos Disponibles</span>
+</div>
+</header>
+
 <div class="container" id="cards"></div>
 
+<!-- MODAL -->
 <div class="modal" id="modal">
 <div class="modal-box">
 <span class="close" onclick="cerrarModal()">✖</span>
@@ -144,7 +259,10 @@ function crearCard(ida, regreso){
 
 let escala = ida[0]=="SI"
 
-let duracion=calcularDuracion(ida[5], ida[6])
+let salida = ida[5]
+let llegada = escala ? ida[12] : ida[6]
+
+let duracion = calcularDuracion(salida, llegada)
 
 let card=`
 <div class="card">
@@ -152,13 +270,13 @@ let card=`
 <div class="left">
 
 <div class="top">
-${ida[3]} ${escala ? `• Escala en ${ida[7]}` : ""}
+${ida[3]} ${escala ? `• Escala en ${ida[8]}` : ""}
 </div>
 
 <div class="times">
 
 <div>
-<div class="time">${ida[5]}</div>
+<div class="time">${salida}</div>
 <div class="city">${ida[1]}</div>
 </div>
 
@@ -172,13 +290,15 @@ ${escala ? `<div class="dot middle"></div>` : ""}
 </div>
 
 <div style="text-align:right">
-<div class="time">${ida[12]}</div>
-<div class="city">${ida[8]}</div>
+<div class="time">${llegada}</div>
+<div class="city">${ida[2]}</div>
 </div>
 
 </div>
 
-<div class="operado">Operado por ${ida[3]} - ${ida[9]}</div>
+<div class="operado">
+Operado por ${ida[3]} ${escala ? `• ${ida[9]}` : ""}
+</div>
 
 <div class="details" onclick='abrirModal(${JSON.stringify(ida)},${JSON.stringify(regreso)})'>
 Ver detalles >
@@ -188,9 +308,18 @@ Ver detalles >
 
 <div class="right">
 <div class="bar"></div>
+
 <div class="price-title">Vuelo de ida - desde</div>
 <div class="price">${ida[14]} USD</div>
 <div class="class">Económica</div>
+
+<div class="extra">🧳 ${ida[15]}</div>
+<div class="extra">🎫 ${ida[13]} cupos</div>
+
+<button class="btn" onclick="consultar('${ida[1]}-${ida[2]}', ${ida[13]}, '${ida[15]}', ${ida[14]})">
+Consultar
+</button>
+
 </div>
 
 </div>
@@ -202,45 +331,75 @@ document.getElementById("cards").innerHTML+=card
 
 function abrirModal(ida, regreso){
 
-let escala = ida[0]=="SI" ? `
-<div class="scale-box">
-Cambio de aeronave en ${ida[7]}<br>
-Escala de ${calcularDuracion(ida[6], ida[11])}
-</div>` : ""
+let escala = ida[0]=="SI"
 
-let html=`
+let html = ""
 
+if(!escala){
+
+html = `
 <div class="step">
-<b>${ida[5]} - ${ida[1]} ${ida[3]}</b>
+<b>${ida[5]} - ${ida[1]}</b>
 <div>${ida[3]}</div>
 </div>
 
 <div class="step">
-<b>${ida[6]} - ${ida[7] || ida[2]}</b>
+<b>${ida[6]} - ${ida[2]}</b>
+</div>
+`
+
+}else{
+
+html = `
+<div class="step">
+<b>${ida[5]} - ${ida[1]}</b>
+<div>${ida[3]}</div>
 </div>
 
-${escala}
-
-${ida[0]=="SI" ? `
 <div class="step">
-<b>${ida[5]} - ${ida[1]} ${ida[9]}</b>
+<b>${ida[6]} - ${ida[8]}</b>
+</div>
+
+<div class="scale-box">
+Cambio de aeronave en ${ida[8]}<br>
+Escala de ${calcularDuracion(ida[6], ida[11])}
+</div>
+
+<div class="step">
+<b>${ida[11]} - ${ida[8]}</b>
 <div>${ida[9]}</div>
 </div>
 
 <div class="step">
-<b>${ida[12]} - ${ida[8]}</b>
+<b>${ida[12]} - ${ida[2]}</b>
 </div>
-` : ""}
-
 `
+}
 
-document.getElementById("detalle").innerHTML=html
-document.getElementById("modal").style.display="flex"
+document.getElementById("detalle").innerHTML = html
+document.getElementById("modal").style.display = "flex"
 
 }
 
 function cerrarModal(){
 document.getElementById("modal").style.display="none"
+}
+
+function consultar(ruta, cupos, equipaje, precio){
+
+let cantidad = prompt(`¿Cuántos cupos deseas? (Disponibles: ${cupos})`)
+
+if(!cantidad) return
+
+let cuerpo = `
+Ruta: ${ruta}
+Cupos solicitados: ${cantidad}
+Equipaje: ${equipaje}
+Tarifa: USD ${precio}
+`
+
+window.location.href = `mailto:jose@libertyuruguay.com.uy?subject=${ruta}&body=${encodeURIComponent(cuerpo)}`
+
 }
 
 </script>
