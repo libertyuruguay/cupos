@@ -152,7 +152,7 @@ let card=`
 <div class="left">
 
 <div class="top">
-${ida[3]} ${escala ? `• Escala en ${ida[8]}` : ""}
+${ida[3]} ${escala ? `• Escala en ${ida[7]}` : ""}
 </div>
 
 <div class="times">
@@ -172,7 +172,7 @@ ${escala ? `<div class="dot middle"></div>` : ""}
 </div>
 
 <div style="text-align:right">
-<div class="time">${ida[6]}</div>
+<div class="time">${ida[12]}</div>
 <div class="city">${ida[8]}</div>
 </div>
 
@@ -211,24 +211,24 @@ Escala de ${calcularDuracion(ida[6], ida[11])}
 let html=`
 
 <div class="step">
-<b>${ida[5]} - ${ida[1]}</b>
+<b>${ida[5]} - ${ida[1]} ${ida[3]}</b>
 <div>${ida[3]}</div>
 </div>
 
 <div class="step">
-<b>${ida[6]} - ${ida[8] || ida[2]}</b>
+<b>${ida[6]} - ${ida[7] || ida[2]}</b>
 </div>
 
 ${escala}
 
 ${ida[0]=="SI" ? `
 <div class="step">
-<b>${ida[11]} - ${ida[8]}</b>
+<b>${ida[5]} - ${ida[1]} ${ida[9]}</b>
 <div>${ida[9]}</div>
 </div>
 
 <div class="step">
-<b>${ida[12]} - ${ida[2]}</b>
+<b>${ida[12]} - ${ida[8]}</b>
 </div>
 ` : ""}
 
