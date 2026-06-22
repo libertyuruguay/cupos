@@ -153,6 +153,10 @@ display:none;
 
 <div class="grid" id="cardsJulio"></div>
 
+<h2 class="titulo-julio" id="tituloTurismo">CUPOS VACACIONES DE TURISMO</h2>
+
+<div class="grid" id="cardsTurismo"></div>
+
 </div>
 
 <script>
@@ -170,6 +174,7 @@ return cols
 })
 
 let hayJulio = false
+let hayTurismo = false
 
 for(let i=0;i<rows.length;i+=2){
 
@@ -182,8 +187,10 @@ let flag = (ida[0] || "").toUpperCase()
 // 🔥 DETECCIONES
 let tieneEscala = flag.includes("SI")
 let esJulio = flag.includes("VACACIONES DE JULIO")
+let esTurismo = flag.includes("VACACIONES DE TURISMO")
 
 if(esJulio) hayJulio = true
+if(esTurismo) hayTurismo = true
 
 let origen=ida[1]
 let destino=ida[2]
@@ -211,7 +218,7 @@ let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,esJulio)
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo)
 
 }
 
@@ -219,9 +226,13 @@ if(hayJulio){
 document.getElementById("tituloJulio").style.display = "block"
 }
 
+if(hayTurismo){
+document.getElementById("tituloTurismo").style.display = "block"
+}
+
 })
 
-function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,esJulio){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo){
 
 let card=`<div class="card">
 
@@ -250,6 +261,8 @@ ${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 
 if(esJulio){
 document.getElementById("cardsJulio").innerHTML += card
+}else if(esTurismo){
+document.getElementById("cardsTurismo").innerHTML += card
 }else{
 document.getElementById("cards").innerHTML += card
 }
