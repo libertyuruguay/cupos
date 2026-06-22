@@ -61,14 +61,8 @@ box-shadow:0 20px 40px rgba(0,0,0,0.15);
 }
 
 @keyframes fadeUp{
-from{
-opacity:0;
-transform:translateY(20px);
-}
-to{
-opacity:1;
-transform:translateY(0);
-}
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
 }
 
 .plane{
@@ -102,7 +96,6 @@ color:#0b3a6f;
 
 .flightline{
 font-size:14px;
-letter-spacing:0.2px;
 line-height:1.6;
 color:#333;
 }
@@ -129,11 +122,15 @@ border-radius:7px;
 cursor:pointer;
 width:100%;
 font-weight:600;
-transition:.25s;
 }
 
-.mailbtn:hover{
-background:#072a52;
+.titulo-julio{
+margin-top:60px;
+text-align:center;
+color:#0b3a6f;
+font-size:26px;
+font-weight:600;
+display:none;
 }
 
 </style>
@@ -149,7 +146,13 @@ background:#072a52;
 </header>
 
 <div class="container">
+
 <div class="grid" id="cards"></div>
+
+<h2 class="titulo-julio" id="tituloJulio">CUPOS VACACIONES DE JULIO</h2>
+
+<div class="grid" id="cardsJulio"></div>
+
 </div>
 
 <script>
@@ -161,23 +164,26 @@ fetch(CSV)
 .then(data=>{
 
 let rows=data.split("\n").slice(2).map(r=>{
-
 let cols=r.split(",")
-
-while(cols.length<16){
-cols.push("")
-}
-
+while(cols.length<16){ cols.push("") }
 return cols
-
 })
+
+let hayJulio = false
 
 for(let i=0;i<rows.length;i+=2){
 
 let ida=rows[i]
 let regreso=rows[i+1]
-
 if(!regreso) break
+
+let flag = (ida[0] || "").toUpperCase()
+
+// 🔥 DETECCIONES
+let tieneEscala = flag.includes("SI")
+let esJulio = flag.includes("VACACIONES DE JULIO")
+
+if(esJulio) hayJulio = true
 
 let origen=ida[1]
 let destino=ida[2]
@@ -187,56 +193,37 @@ let idaLinea=`${origen} → ${destino} | ${ida[3]} | ${ida[4]} | ${ida[5]}-${ida
 let idaEscala=""
 let escalaDestino=destino
 
-if(ida[0]=="SI"){
-
+if(tieneEscala){
 escalaDestino=ida[8]
-
 idaEscala=`${ida[7]} → ${ida[8]} | ${ida[9]} | ${ida[10]} | ${ida[11]}-${ida[12]}`
-
 }
 
 let regresoLinea=`${regreso[1]} → ${regreso[2]} | ${regreso[3]} | ${regreso[4]} | ${regreso[5]}-${regreso[6]}`
 
 let regresoEscala=""
 
-if(regreso[0]=="SI"){
-
+let flagRegreso = (regreso[0] || "").toUpperCase()
+if(flagRegreso.includes("SI")){
 regresoEscala=`${regreso[7]} → ${regreso[8]} | ${regreso[9]} | ${regreso[10]} | ${regreso[11]}-${regreso[12]}`
-
 }
 
 let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje)
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,esJulio)
 
+}
+
+if(hayJulio){
+document.getElementById("tituloJulio").style.display = "block"
 }
 
 })
 
-function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,esJulio){
 
-let asunto=`${origen} - ${destino}`
-
-let cuerpo=`Ruta: ${origen} - ${destino}
-
-IDA
-${ida}
-${idaEscala}
-
-REGRESO
-${regreso}
-${regresoEscala}
-
-Equipaje: ${equipaje}
-Tarifa: USD ${precio}
-Cupos disponibles: ${cupos}
-`
-
-let card=`
-
-<div class="card">
+let card=`<div class="card">
 
 <img class="plane" src="avion-cupos.png">
 
@@ -259,31 +246,13 @@ ${regresoEscala ? `<div class="flightline">${regresoEscala}</div>`:""}
 
 <div class="price"> USD ${precio}</div>
 
-<button class="mailbtn" onclick="consultar('${asunto}',\`${cuerpo}\`)">
-Consultar por Mail
-</button>
+</div>`
 
-</div>
-`
-
-document.getElementById("cards").innerHTML+=card
-
+if(esJulio){
+document.getElementById("cardsJulio").innerHTML += card
+}else{
+document.getElementById("cards").innerHTML += card
 }
-
-function consultar(asunto,cuerpo){
-
-let cantidad=prompt("¿Cuántos cupos deseas reservar?")
-
-if(!cantidad) return
-
-let mensaje=cuerpo + `
-
-Cupos solicitados: ${cantidad}
-`
-
-let mail=`mailto:jose@libertyuruguay.com.uy?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(mensaje)}`
-
-window.location.href=mail
 
 }
 
