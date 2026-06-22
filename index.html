@@ -153,7 +153,7 @@ display:none;
 
 <div class="grid" id="cardsJulio"></div>
 
-<h2 class="titulo-julio" id="tituloTurismo">CUPOS VACACIONES DE TURISMO</h2>
+<h2 class="titulo-julio" id="tituloTurismo">CUPOS SEMANA DE TURISMO</h2>
 
 <div class="grid" id="cardsTurismo"></div>
 
@@ -187,7 +187,7 @@ let flag = (ida[0] || "").toUpperCase()
 // 🔥 DETECCIONES
 let tieneEscala = flag.includes("SI")
 let esJulio = flag.includes("VACACIONES DE JULIO")
-let esTurismo = flag.includes("VACACIONES DE TURISMO")
+let esTurismo = flag.includes("SEMANA DE TURISMO")
 
 if(esJulio) hayJulio = true
 if(esTurismo) hayTurismo = true
