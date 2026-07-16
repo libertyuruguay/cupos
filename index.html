@@ -163,7 +163,22 @@ display:none;
 
 const CSV="https://docs.google.com/spreadsheets/d/e/2PACX-1vS1RniGt74piEAVb7oVGRQ5NQ-cH_8_gY5V0ZTKWIegH0Osb1SQ_la4lW5nT3E7g2wnjjcHYGSYuQnt/pub?output=csv"
 
-fetch(CSV)
+// 🛩 IMAGEN SEGÚN AEROLÍNEA (prefijo IATA del código de vuelo)
+const AEROLINEAS={
+"AV":"AV.png",   // Avianca
+"LA":"LA.png",   // LATAM
+"H2":"H2.png"    // Sky Airline
+}
+
+const IMAGEN_DEFAULT="avion-cupos.png"
+
+function imagenAerolinea(codigoVuelo){
+let prefijo=(codigoVuelo||"").trim().substring(0,2).toUpperCase()
+return AEROLINEAS[prefijo] || IMAGEN_DEFAULT
+}
+
+// 🔄 cache-busting: fuerza a traer la versión más reciente del CSV
+fetch(CSV + "&t=" + Date.now(), { cache: "no-store" })
 .then(r=>r.text())
 .then(data=>{
 
@@ -218,7 +233,10 @@ let cupos=ida[13]
 let precio=ida[14]
 let equipaje=ida[15]
 
-crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo)
+// 🛩 imagen según la aerolínea del vuelo de ida
+let imagen=imagenAerolinea(ida[3])
+
+crearCard(origen,escalaDestino,idaLinea,idaEscala,regresoLinea,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo,imagen)
 
 }
 
@@ -232,11 +250,11 @@ document.getElementById("tituloTurismo").style.display = "block"
 
 })
 
-function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo){
+function crearCard(origen,destino,ida,idaEscala,regreso,regresoEscala,cupos,precio,equipaje,esJulio,esTurismo,imagen){
 
 let card=`<div class="card">
 
-<img class="plane" src="avion-cupos.png">
+<img class="plane" src="${imagen}" onerror="this.src='avion-cupos.png'">
 
 <div class="route">${origen} - ${destino}</div>
 
